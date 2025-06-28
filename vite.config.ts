@@ -1,8 +1,22 @@
-import { reactRouter } from "@react-router/dev/vite";
-import tailwindcss from "@tailwindcss/vite";
-import { defineConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
+import react from "@vitejs/plugin-react"
+import { defineConfig } from "vite"
+import Sonda from 'sonda/vite'; 
+
+import path from "path"
+import tailwindcss from "@tailwindcss/vite"
 
 export default defineConfig({
-  plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
-});
+  build:{sourcemap:true},
+  plugins: [react({
+    babel:{
+      plugins:[
+        'babel-plugin-react-compiler'
+      ]
+    }
+  }), tailwindcss(), Sonda()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+})
