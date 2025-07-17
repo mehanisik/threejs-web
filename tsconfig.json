@@ -1,15 +1,24 @@
 {
-	"compilerOptions": {
-	  "composite": true,
-	  /* Paths (for shadcn/ui since paths in tsconfig.app.json are not working) */
-	  "baseUrl": ".",
-	  "paths": {
-		"@/*": ["./src/*"]
-	  }
-	},
-	"files": [],
-	"references": [
-	  { "path": "./tsconfig.app.json" },
-	  { "path": "./tsconfig.node.json" }
-	]
-  }
+  "compilerOptions": {
+    "incremental": true,
+    "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
+    "noEmit": true,
+    "module": "ESNext",
+    "strict": true,
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "types": ["node", "vite/client"],
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+
+    "typeRoots": ["./node_modules/@types", "./src/types"]
+  },
+  "include": ["**/*.ts", "**/*.tsx", "src/types/**/*.d.ts"],
+  "exclude": ["node_modules"]
+}

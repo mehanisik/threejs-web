@@ -1,0 +1,119 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme inline {
+  --font-sans: "Space Mono", sans-serif;
+  --font-mono: "Space Mono", monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-additive: var(--additive);
+  --color-additive-foreground: var(--additive-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+}
+
+@font-face {
+  font-family: "Space Mono";
+  src: url("/SpaceMono-Regular.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+}
+
+[data-theme="dark"] {
+  --background: oklch(0.1957 0 0);
+  --foreground: oklch(0.985 0 0);
+}
+[data-theme="light"] {
+  --background: oklch(0.985 0 0);
+  --foreground: oklch(0.205 0 0);
+}
+
+[data-theme="orange"] {
+  --background: oklch(0.7022 0.2004 45.1);
+  --foreground: oklch(0.98 0.02 161.03);
+}
+
+[data-theme="blue"] {
+  --background: oklch(0.5209 0.2478 262.36);
+  --foreground: oklch(0.98 0.01 262.36);
+}
+
+[data-theme="green"] {
+  --background: oklch(0.4784 0.1065 161.03);
+  --foreground: oklch(0.98 0.02 161.03);
+  --border: oklch(0.4784 0.1065 161.03);
+  --ring: oklch(0.4784 0.1065 161.03);
+}
+
+[data-theme="zinc"] {
+  --background: oklch(0.5 0 0);
+  --foreground: oklch(0.98 0 0);
+}
+
+[data-theme="rose"] {
+  --background: oklch(0.6 0.2 10);
+  --foreground: oklch(1 0.02 10);
+}
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    @apply border-border outline-ring/50 tracking-tight;
+  }
+}
+
+canvas {
+  image-rendering: pixelated;
+}
+
+/* Removing scrollbar */
+::-webkit-scrollbar {
+  display: none !important;
+}
+
+::-webkit-scrollbar-track {
+  display: none !important;
+}
+
+::-webkit-scrollbar-thumb {
+  display: none !important;
+}
