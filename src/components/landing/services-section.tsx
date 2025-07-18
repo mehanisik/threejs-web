@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { services } from "~/constants/services";
 import { useIsMobile } from "~/hooks/use-mobile";
@@ -7,6 +7,8 @@ import { SectionTitle } from "../ui/typography";
 export const ServicesSection = () => {
   const targetRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const inViewRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(inViewRef, { amount: 0.3, once: true });
 
   const { scrollYProgress } = useScroll({
     target: targetRef,
@@ -25,30 +27,39 @@ export const ServicesSection = () => {
       className={`${isMobile ? "h-auto" : "h-[300vh]"} relative overflow-x-clip`}
     >
       <div
-        className={`${isMobile ? "relative" : "sticky top-0 h-screen"} border-b border-border overflow-hidden p-5`}
+        ref={inViewRef}
+        className={`${isMobile ? "relative" : "sticky top-0 h-screen"} border-b border-border overflow-hidden`}
       >
-        <div className="w-full pt-8 pb-4 px-2">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+          transition={{ duration: 0.7 }}
+        >
           <SectionTitle>What I Do</SectionTitle>
-        </div>
+        </motion.div>
         <motion.div
           style={{ x }}
           className="flex flex-col md:flex-row items-center gap-8"
+          initial={{ opacity: 0, y: 50 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
         >
-          {services.map((service) => (
-            <div
+          {services.map((service, idx) => (
+            <motion.div
               key={service.id}
-              className="bg-foreground/80 text-background backdrop-blur-md border border-border rounded-2xl p-6 md:p-8 w-[80vw] md:w-[40vw] lg:w-[30vw] flex-shrink-0 h-[70vh] flex flex-col justify-between group"
+              className="bg-zinc-900 text-white backdrop-blur-md border border-foreground/10 rounded-2xl p-6 md:p-8 w-[80vw] md:w-[40vw] lg:w-[30vw] flex-shrink-0 h-[70vh] flex flex-col justify-between group"
+              initial={{ opacity: 0, y: 50 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+              transition={{ duration: 0.7, delay: 0.3 + idx * 0.1 }}
             >
               <div>
                 <div className="flex justify-between items-start">
-                  <h3 className="text-2xl md:text-3xl font-bold text-background max-w-[80%]">
+                  <h3 className="text-2xl md:text-3xl font-bold max-w-[80%]">
                     {service.title}
                   </h3>
-                  <span className="text-background font-mono">
-                    {service.id}
-                  </span>
+                  <span className=" font-mono">{service.id}</span>
                 </div>
-                <p className="text-background mt-4 text-base md:text-lg">
+                <p className=" mt-4 text-base md:text-lg">
                   {service.description}
                 </p>
               </div>
@@ -59,7 +70,7 @@ export const ServicesSection = () => {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
                 />
               </div>
-            </div>
+            </motion.div>
           ))}
           {!isMobile && <div className="w-[40vw] flex-shrink-0" />}
         </motion.div>

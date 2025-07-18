@@ -1,4 +1,4 @@
-import { Archive, Volume2, VolumeX } from "lucide-react";
+import { AudioLines, VolumeOff } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import { useState } from "react";
 import { Link } from "wouter";
@@ -6,6 +6,8 @@ import { Nav } from "~/components/ui/nav";
 import { NavButton } from "~/components/ui/nav-button";
 import { navLinks } from "~/constants/nav-links";
 import { socialLinks } from "~/constants/social-links";
+import { cn } from "~/lib/utils";
+import { Button } from "../ui/button";
 import { useAudio } from "./audio-context";
 
 const menuVariants: Variants = {
@@ -36,26 +38,39 @@ export const Navbar = () => {
   return (
     <>
       <div className="fixed left-12 top-12 z-50">
-        <Link href="/" className="flex items-center gap-2 text-foreground">
-          <Archive className="w-6 h-6 text-foreground" />
-          <span className="text-foreground font-bold text-lg">LOGO</span>
+        <Link href="" className="flex items-center gap-2 text-foreground">
+          <svg
+            viewBox="0 0 32 32"
+            width="32"
+            height="32"
+            fill="none"
+            className="w-8 h-8 text-foreground"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <title>Mami Hasturk</title>
+            <rect
+              x="4"
+              y="4"
+              width="24"
+              height="24"
+              rx="6"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
+            <path
+              d="M10 22V10L22 22V10"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          <span className="text-foreground font-bold text-lg tracking-tight ">
+            Mami Hasturk
+          </span>
         </Link>
       </div>
       <div className="fixed right-12 top-12 z-50 flex items-center gap-4">
-        <button
-          type="button"
-          onClick={toggleAudio}
-          aria-label={
-            isPlaying ? "Pause background audio" : "Play background audio"
-          }
-          className="p-2 rounded-full border border-foreground bg-background hover:bg-foreground/10 transition-colors"
-        >
-          {isPlaying ? (
-            <Volume2 className="w-6 h-6 text-foreground" />
-          ) : (
-            <VolumeX className="w-6 h-6 text-foreground" />
-          )}
-        </button>
         <motion.div
           className="bg-foreground shadow-2xl  rounded-3xl relative w-[480px] h-[650px]"
           variants={menuVariants}
@@ -68,8 +83,26 @@ export const Navbar = () => {
         </motion.div>
         <NavButton
           isActive={isActive}
-          toggleMenu={() => setIsActive(!isActive)}
+          toggleMenu={() => {
+            setIsActive(!isActive);
+          }}
         />
+      </div>
+
+      <div className="fixed left-8 bottom-8 z-50">
+        <Button
+          variant="ghost"
+          className={cn("group relative")}
+          onClick={toggleAudio}
+        >
+          {isPlaying ? (
+            <AudioLines
+              className={cn("h-20 w-20", isPlaying && "animate-accordion-up")}
+            />
+          ) : (
+            <VolumeOff className="h-20 w-20" />
+          )}
+        </Button>
       </div>
     </>
   );

@@ -1,5 +1,6 @@
 import { renderToString } from "react-dom/server";
 import App from "./src/app";
+import type { HelmetServerState } from "react-helmet-async";
 
 if (typeof globalThis.localStorage === "undefined") {
   const m = new Map<string, string>();
@@ -16,18 +17,13 @@ if (typeof globalThis.localStorage === "undefined") {
 }
 
 export async function prerender() {
-  const helmetCtx: {
-    helmet?: {
-      title?: { toString: () => string };
-      meta?: { toString: () => string };
-    };
-  } = {};
+  const helmetCtx: { helmet?: HelmetServerState } = {};
 
   const html = renderToString(<App helmetContext={helmetCtx} />);
 
-  const rawTitle = helmetCtx.helmet.title?.toString() ?? "";
+  const rawTitle = helmetCtx.helmet?.title?.toString() ?? "";
   const titleText = rawTitle.replace(/<\/?title[^>]*>/g, "");
-  const metaTags = helmetCtx.helmet.meta?.toString() ?? "";
+  const metaTags = helmetCtx.helmet?.meta?.toString() ?? "";
 
   return {
     html,

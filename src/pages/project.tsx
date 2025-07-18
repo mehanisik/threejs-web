@@ -94,13 +94,13 @@ export function ProjectPage() {
           </div>
           <div className="flex flex-row justify-between mt-8">
             <Link
-              href={`/projects/${project?.number ? project.number - 1 : 1}`}
+              href={`/projects/${project?.number ? Number.parseInt(project.number, 10) - 1 : 1}`}
               className="underline"
             >
               [Prev]
             </Link>
             <Link
-              href={`/projects/${project?.number ? project.number + 1 : 1}`}
+              href={`/projects/${project?.number ? Number.parseInt(project.number, 10) + 1 : 1}`}
               className="underline"
             >
               [Next]

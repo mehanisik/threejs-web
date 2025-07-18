@@ -1,9 +1,11 @@
-import { PerspectiveCamera } from "@react-three/drei";
-import { Environment } from "@react-three/drei";
-import { Text } from "@react-three/drei";
-import { GlassObject } from "./glass-object";
-import { OrbitControls } from "@react-three/drei";
+import {
+  Environment,
+  OrbitControls,
+  PerspectiveCamera,
+  Text,
+} from "@react-three/drei";
 import { useIsMobile } from "~/hooks/use-mobile";
+import { GlassObject } from "./glass-object";
 
 export function Scene() {
   const isMobile = useIsMobile();
