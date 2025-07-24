@@ -1,8 +1,10 @@
 import { HelmetProvider, type HelmetServerState } from "react-helmet-async";
 import { Route, Switch } from "wouter";
-import { AdminPage } from "~/pages/admin";
+import { MouseTrail } from "./components/ui/mouse-trail";
 import { Toaster } from "./components/ui/sonner";
+import { AuthProvider } from "./lib/auth";
 import { LenisProvider } from "./lib/lenis";
+import { AdminPage } from "./pages/admin";
 import { HomePage } from "./pages/home";
 import { NotFoundPage } from "./pages/not-found";
 import { ProjectPage } from "./pages/project";
@@ -25,10 +27,13 @@ function App({
 }) {
   return (
     <HelmetProvider context={helmetContext}>
-      <LenisProvider>
-        <Router />
-      </LenisProvider>
-      <Toaster />
+      <AuthProvider>
+        <LenisProvider>
+          <MouseTrail />
+          <Router />
+        </LenisProvider>
+        <Toaster />
+      </AuthProvider>
     </HelmetProvider>
   );
 }

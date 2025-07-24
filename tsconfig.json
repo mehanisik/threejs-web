@@ -14,7 +14,7 @@
     "baseUrl": ".",
     "types": ["node", "vite/client"],
     "paths": {
-      "~/*": ["./src/*"]
+      "@/*": ["./src/*"]
     },
 
     "typeRoots": ["./node_modules/@types", "./src/types"]

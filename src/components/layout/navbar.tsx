@@ -1,14 +1,12 @@
-import { AudioLines, VolumeOff } from "lucide-react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import { useState } from "react";
 import { Link } from "wouter";
-import { Nav } from "~/components/ui/nav";
-import { NavButton } from "~/components/ui/nav-button";
-import { navLinks } from "~/constants/nav-links";
-import { socialLinks } from "~/constants/social-links";
-import { cn } from "~/lib/utils";
-import { Button } from "../ui/button";
-import { useAudio } from "./audio-context";
+import { Nav } from "@/components/ui/nav";
+import { NavButton } from "@/components/ui/nav-button";
+import { navLinks } from "@/constants/nav-links";
+import { socialLinks } from "@/constants/social-links";
+import { useNavbarVisibility } from "@/hooks/use-navbar-visibility";
+import { AudioButton } from "../ui/audio-button";
 
 const menuVariants: Variants = {
   open: {
@@ -32,12 +30,63 @@ const menuVariants: Variants = {
   },
 };
 
+const navbarVariants: Variants = {
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut",
+    },
+  },
+  hidden: {
+    y: -100,
+    opacity: 0,
+    transition: {
+      duration: 0.3,
+      ease: "easeIn",
+    },
+  },
+};
+
+const indicatorVariants: Variants = {
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut",
+    },
+  },
+  hidden: {
+    opacity: 0,
+    y: -10,
+    transition: {
+      duration: 0.3,
+      ease: "easeIn",
+    },
+  },
+};
+
 export const Navbar = () => {
   const [isActive, setIsActive] = useState<boolean>(false);
-  const { isPlaying, toggleAudio } = useAudio();
+  const isNavbarVisible = useNavbarVisibility(80);
+
   return (
     <>
-      <div className="fixed left-12 top-12 z-50">
+      <motion.div
+        className="fixed top-0 left-1/2 transform -translate-x-1/2 z-40"
+        variants={indicatorVariants}
+        animate={!isNavbarVisible ? "visible" : "hidden"}
+        initial="hidden"
+      />
+
+      <motion.div
+        className="fixed left-12 top-12 z-50"
+        variants={navbarVariants}
+        animate={isNavbarVisible ? "visible" : "hidden"}
+        initial="hidden"
+      >
         <Link href="" className="flex items-center gap-2 text-foreground">
           <svg
             viewBox="0 0 32 32"
@@ -69,8 +118,13 @@ export const Navbar = () => {
             Mami Hasturk
           </span>
         </Link>
-      </div>
-      <div className="fixed right-12 top-12 z-50 flex items-center gap-4">
+      </motion.div>
+      <motion.div
+        className="fixed right-12 top-12 z-50 flex items-center gap-4"
+        variants={navbarVariants}
+        animate={isNavbarVisible ? "visible" : "hidden"}
+        initial="hidden"
+      >
         <motion.div
           className="bg-foreground shadow-2xl  rounded-3xl relative w-[480px] h-[650px]"
           variants={menuVariants}
@@ -87,22 +141,10 @@ export const Navbar = () => {
             setIsActive(!isActive);
           }}
         />
-      </div>
+      </motion.div>
 
       <div className="fixed left-8 bottom-8 z-50">
-        <Button
-          variant="ghost"
-          className={cn("group relative")}
-          onClick={toggleAudio}
-        >
-          {isPlaying ? (
-            <AudioLines
-              className={cn("h-20 w-20", isPlaying && "animate-accordion-up")}
-            />
-          ) : (
-            <VolumeOff className="h-20 w-20" />
-          )}
-        </Button>
+        <AudioButton />
       </div>
     </>
   );

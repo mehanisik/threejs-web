@@ -1,9 +1,9 @@
 import { LoaderPinwheel, Palette } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { themes } from "~/constants/themes";
-import { useTheme } from "~/hooks/use-theme";
-import type { ThemeName } from "~/types/theme";
+import { themes } from "@/constants/themes";
+import { useTheme } from "@/hooks/use-theme";
+import type { ThemeName } from "@/types/theme";
 
 interface WheelSegment {
   id: ThemeName;

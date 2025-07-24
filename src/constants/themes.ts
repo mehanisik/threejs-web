@@ -1,5 +1,5 @@
 import { Moon, Palette, Droplets, Leaf, Sun, Flame } from "lucide-react";
-import type { ThemeColors, ThemeMeta, ThemeName } from "~/types/theme";
+import type { ThemeColors, ThemeMeta, ThemeName } from "@/types/theme";
 
 export const themeColors: Record<ThemeName, ThemeColors> = {
   dark: {

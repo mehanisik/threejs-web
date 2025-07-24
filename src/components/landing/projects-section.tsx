@@ -1,285 +1,184 @@
-import {
-  AnimatePresence,
-  motion,
-  useInView,
-  type Variants,
-} from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { useRef, useState } from "react";
-import { Link, useLocation } from "wouter";
-import { projects } from "~/constants/projects";
-import { useMousePosition } from "~/hooks/use-mouse-position";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-} from "../ui/table";
-import { SectionTitle } from "../ui/typography";
+import { useLocation } from "wouter";
+import { useHackerText } from "@/hooks/use-hacker-text";
+import { useSupabaseTable } from "@/hooks/use-supabase-query";
+import { ProjectModal } from "../ui/project-modal";
 
 export function ProjectsSection() {
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const tableRef = useRef<HTMLTableElement>(null);
-  const sectionRef = useRef<HTMLElement>(null);
-
-  const titleIsInView = useInView(titleRef, {
-    amount: 0.5,
+  const { records: projects } = useSupabaseTable("projects", "*", {
+    column: "number",
+    ascending: true,
   });
 
-  const tableIsInView = useInView(tableRef, {
-    amount: 0.3,
-  });
-
-  const sectionIsInView = useInView(sectionRef, {
-    amount: 0.1,
-  });
-
-  const [, setLocation] = useLocation();
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
-  const { x, y } = useMousePosition();
+  const containerRef = useRef<HTMLDivElement>(null!);
+  const inViewRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(inViewRef, { amount: 0.3, once: true });
+  const [, setLocation] = useLocation();
 
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const titleVariants: Variants = {
-    hidden: {
-      opacity: 0,
-      y: 30,
-      scale: 0.95,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.6,
-        ease: [0.25, 0.1, 0.25, 1],
-      },
-    },
-  };
-
-  const tableVariants: Variants = {
-    hidden: {
-      opacity: 0,
-      y: 40,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.8,
-        ease: [0.25, 0.1, 0.25, 1],
-        staggerChildren: 0.05,
-      },
-    },
-  };
-
-  const rowVariants: Variants = {
-    hidden: {
-      opacity: 0,
-      x: -20,
-      scale: 0.98,
-    },
-    visible: {
-      opacity: 1,
-      x: 0,
-      scale: 1,
-      transition: {
-        duration: 0.5,
-        ease: [0.25, 0.1, 0.25, 1],
-      },
-    },
-  };
-
-  const headerVariants: Variants = {
-    hidden: {
-      opacity: 0,
-      y: -10,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.4,
-        ease: [0.25, 0.1, 0.25, 1],
-      },
-    },
-  };
+  const titleHacker = useHackerText("Featured Projects");
 
   return (
-    <motion.section
-      ref={sectionRef}
-      className="w-full relative font-sans px-0 py-0 flex flex-col"
-      variants={containerVariants}
-      initial="hidden"
-      animate={sectionIsInView ? "visible" : "hidden"}
+    <section
+      className="w-full relative font-sans overflow-hidden"
+      ref={containerRef}
     >
-      <motion.div
-        variants={titleVariants}
-        initial="hidden"
-        animate={titleIsInView ? "visible" : "hidden"}
-      >
-        <SectionTitle ref={titleRef}>Featured Projects</SectionTitle>
-      </motion.div>
-
-      <div className="w-full px-2">
+      <div ref={inViewRef} className="px-4 py-8 md:py-16">
         <motion.div
-          variants={tableVariants}
-          initial="hidden"
-          animate={tableIsInView ? "visible" : "hidden"}
+          initial={{ opacity: 0, y: 50 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+          transition={{ duration: 0.7 }}
+          className="flex items-baseline justify-start gap-3 md:gap-6 mb-12 md:mb-16"
         >
-          <Table ref={tableRef}>
-            <TableHeader>
-              <motion.tr
-                className="text-xs uppercase text-muted-foreground font-semibold border-b border-border"
-                variants={headerVariants}
+          <motion.span
+            className="text-4xl md:text-6xl lg:text-8xl font-thin text-foreground/30 font-mono"
+            initial={{ opacity: 0, rotate: -45 }}
+            animate={
+              isInView ? { opacity: 1, rotate: 0 } : { opacity: 0, rotate: -45 }
+            }
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            04
+          </motion.span>
+          <motion.h1
+            className="text-4xl md:text-6xl lg:text-8xl uppercase font-extrabold tracking-tight cursor-pointer font-mono"
+            onMouseEnter={titleHacker.startHacking}
+            onMouseLeave={titleHacker.stopHacking}
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.2 }}
+          >
+            {titleHacker.displayText}
+            {titleHacker.isHacking && (
+              <motion.span
+                className="opacity-75"
+                animate={{ opacity: [0, 1, 0] }}
+                transition={{
+                  duration: 0.5,
+                  repeat: Number.POSITIVE_INFINITY,
+                }}
               >
-                <TableHead className="text-left py-2 pl-2 w-16 hidden sm:table-cell">
-                  No.
-                </TableHead>
-                <TableHead className="text-left py-2">Title</TableHead>
-                <TableHead className="text-left py-2 w-48 hidden md:table-cell ">
-                  City
-                </TableHead>
-                <TableHead className="text-left py-2 w-48 hidden md:table-cell">
-                  Date
-                </TableHead>
-                <TableHead className="text-left py-2 w-48 hidden md:table-cell">
-                  Tags
-                </TableHead>
-                <TableHead className="text-right py-2 pr-2 w-12" />
-              </motion.tr>
-            </TableHeader>
-            <TableBody>
-              {projects.map((project, idx) => {
-                const isActive = activeIdx === idx;
-                return (
-                  <motion.tr
-                    key={project.title}
-                    className={`group cursor-pointer transition-colors duration-150 border-b border-foreground ${
-                      isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-transparent text-foreground"
-                    }`}
-                    variants={rowVariants}
-                    whileHover={{
-                      scale: 1.01,
-                      transition: { duration: 0.2 },
-                    }}
-                    whileTap={{
-                      scale: 0.99,
-                      transition: { duration: 0.1 },
-                    }}
-                    onMouseEnter={() => setActiveIdx(idx)}
-                    onMouseLeave={() => setActiveIdx(null)}
-                    onClick={() => setLocation(project.url)}
-                    tabIndex={0}
-                  >
-                    <TableCell className="py-3 pl-2 font-mono text-xs md:text-sm align-middle hidden sm:table-cell">
-                      <Link href={project.url}>
-                        {project.number?.toString().padStart(3, "0")}
-                      </Link>
-                    </TableCell>
-                    <TableCell
-                      className="py-3 font-medium text-base md:text-lg align-middle max-w-[200px] sm:max-w-none
-                                 sm:whitespace-normal break-words"
-                    >
-                      <Link href={project.url}>{project.title}</Link>
-                    </TableCell>
-                    <TableCell className="py-3 text-sm align-middle hidden md:table-cell">
-                      <Link href={project.url}>{project.city || ""}</Link>
-                    </TableCell>
-                    <TableCell className="py-3 text-sm align-middle hidden md:table-cell">
-                      <Link href={project.url}>{project.date || ""}</Link>
-                    </TableCell>
-                    <TableCell className="py-3 text-sm align-middle hidden md:table-cell">
-                      <Link href={project.url}>{project.tags || ""}</Link>
-                    </TableCell>
-                    <TableCell className="py-3 pr-2 text-right align-middle">
-                      <Link
-                        href={project.url}
-                        aria-label={`View ${project.title}`}
-                        className="flex items-center justify-center w-8 h-8 rounded-full bg-transparent group-hover:bg-white/10 transition-colors duration-150"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <motion.div
-                          whileHover={{ rotate: 135 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          <ArrowUpRight className="w-5 h-5" />
-                        </motion.div>
-                      </Link>
-                    </TableCell>
-                  </motion.tr>
-                );
-              })}
-            </TableBody>
-          </Table>
+                |
+              </motion.span>
+            )}
+          </motion.h1>
         </motion.div>
 
-        <AnimatePresence>
-          {activeIdx !== null && projects[activeIdx]?.image && x && y && (
+        <motion.div
+          className="w-24 md:w-32 lg:w-40 h-px bg-foreground/30 mb-8 md:mb-12"
+          initial={{ scaleX: 0 }}
+          animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+        />
+
+        <div className="space-y-4 md:space-y-6">
+          {projects?.map((project, idx) => (
             <motion.div
-              className="fixed z-50 pointer-events-none hidden md:block"
-              style={{
-                left: x + 20,
-                top: y - 100,
-                width: 520,
-                height: 320,
-              }}
-              initial={{
-                opacity: 0,
-                scale: 0.8,
-                rotateX: -10,
-                y: 20,
-              }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-                rotateX: 0,
-                y: 0,
-              }}
-              exit={{
-                opacity: 0,
-                scale: 0.9,
-                rotateX: 5,
-                y: -10,
-              }}
-              transition={{
-                duration: 0.3,
-                ease: [0.25, 0.1, 0.25, 1],
-              }}
+              key={project.id}
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+              transition={{ duration: 0.6, delay: 0.3 + idx * 0.1 }}
+              onMouseEnter={() => setActiveIdx(idx)}
+              onMouseLeave={() => setActiveIdx(null)}
+              onClick={() => project.url && setLocation(project.url)}
+              className="group cursor-pointer"
             >
-              <motion.img
-                src={projects[activeIdx].image}
-                alt={projects[activeIdx].title}
-                className="w-full h-full object-cover rounded-lg shadow-2xl border border-border"
-                initial={{ scale: 1.1 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.4 }}
-                onLoad={() =>
-                  console.log("Image loaded:", projects[activeIdx].title)
-                }
-                onError={() =>
-                  console.log(
-                    "Image failed to load:",
-                    projects[activeIdx].title,
-                  )
-                }
-              />
+              <div className="border border-foreground/15 hover:border-foreground/40 transition-all duration-300 p-6 md:p-8 bg-background">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start gap-4 md:gap-8">
+                      <motion.div
+                        className="flex-shrink-0"
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <span className="text-xs md:text-sm font-mono text-foreground/50 tracking-wider">
+                          {project.number?.toString().padStart(3, "0")}
+                        </span>
+                      </motion.div>
+
+                      <div className="flex-1 min-w-0">
+                        <motion.h3
+                          className="text-xl md:text-2xl lg:text-3xl font-light mb-2 group-hover:text-foreground transition-colors duration-300"
+                          whileHover={{ x: 5 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          {project.title}
+                        </motion.h3>
+
+                        <div className="flex flex-wrap items-center gap-4 md:gap-8 text-sm text-foreground/70">
+                          {project.city && (
+                            <span className="flex-shrink-0">
+                              {project.city}
+                            </span>
+                          )}
+                          {project.date && (
+                            <span className="flex-shrink-0">
+                              {project.date}
+                            </span>
+                          )}
+                          {project.tags && project.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {project.tags.slice(0, 3).map((tag, tagIdx) => (
+                                <span
+                                  key={`${project.id}-tag-${tag}-${tagIdx}`}
+                                  className="text-xs px-2 py-1 border border-foreground/20 text-foreground/60"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                              {project.tags.length > 3 && (
+                                <span className="text-xs text-foreground/50">
+                                  +{project.tags.length - 3}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <motion.div
+                    className="flex-shrink-0"
+                    whileHover={{ scale: 1.2, rotate: 45 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="w-10 h-10 md:w-12 md:h-12 border border-foreground/30 group-hover:border-foreground/60 transition-colors duration-300 flex items-center justify-center">
+                      <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 text-foreground/60 group-hover:text-foreground transition-colors duration-300" />
+                    </div>
+                  </motion.div>
+                </div>
+
+                <motion.div
+                  className="w-full h-px bg-foreground/10 mt-6 md:mt-8"
+                  initial={{ scaleX: 0 }}
+                  animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
+                  transition={{ duration: 0.6, delay: 0.8 + idx * 0.1 }}
+                  whileHover={{
+                    scaleX: 1,
+                    backgroundColor: "rgba(var(--foreground), 0.3)",
+                  }}
+                />
+              </div>
             </motion.div>
-          )}
-        </AnimatePresence>
+          ))}
+        </div>
       </div>
-    </motion.section>
+
+      <ProjectModal
+        modal={{ index: activeIdx ?? 0, active: activeIdx !== null }}
+        projects={
+          projects?.map((project) => ({
+            title: project.title,
+            subtitle: project.city ?? "",
+            href: project.url ?? "",
+            imgSrc: project.image ?? "",
+          })) ?? []
+        }
+        containerRef={containerRef}
+      />
+    </section>
   );
 }

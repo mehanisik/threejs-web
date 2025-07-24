@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
 
 type ObserverRect = Omit<DOMRectReadOnly, "toJSON">;
 
 export default function useResizeObserver(): [
-  React.RefObject<Element | null>,
+  RefObject<Element | null>,
   ObserverRect | undefined,
 ] {
   const ref = useRef<Element | null>(null);

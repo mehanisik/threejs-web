@@ -1,9 +1,9 @@
-import { motion, type Variants } from 'motion/react'
+import { motion, type Variants } from "motion/react";
 
 interface NavProps {
-  active: boolean
-  links: { title: string; href: string }[]
-  footerLinks: { name: string; url: string }[]
+  active: boolean;
+  links: { title: string; href: string }[];
+  footerLinks: { name: string; url: string }[];
 }
 
 const perspective: Variants = {
@@ -27,9 +27,9 @@ const perspective: Variants = {
   }),
   exit: {
     opacity: 0,
-    transition: { duration: 0.5, type: 'tween', ease: [0.76, 0, 0.24, 1] },
+    transition: { duration: 0.5, type: "tween", ease: [0.76, 0, 0.24, 1] },
   },
-}
+};
 
 const slideIn: Variants = {
   initial: {
@@ -47,25 +47,25 @@ const slideIn: Variants = {
   }),
   exit: {
     opacity: 0,
-    transition: { duration: 0.5, type: 'tween', ease: 'easeInOut' },
+    transition: { duration: 0.5, type: "tween", ease: "easeInOut" },
   },
-}
+};
 
 export const Nav: React.FC<NavProps> = ({ active, links, footerLinks }) => {
-  if (!active) return null
+  if (!active) return null;
   return (
     <div
       className="flex flex-col justify-between h-full box-border"
-      style={{ padding: '100px 40px 50px 40px' }}
+      style={{ padding: "100px 40px 50px 40px" }}
     >
       <div className="flex gap-2.5 flex-col">
         {links.map((link, i) => {
-          const { title, href } = link
+          const { title, href } = link;
           return (
             <div
               key={`b_${title}`}
               className="perspective-120"
-              style={{ perspective: '120px', perspectiveOrigin: 'bottom' }}
+              style={{ perspective: "120px", perspectiveOrigin: "bottom" }}
             >
               <motion.div
                 custom={i}
@@ -82,12 +82,12 @@ export const Nav: React.FC<NavProps> = ({ active, links, footerLinks }) => {
                 </a>
               </motion.div>
             </div>
-          )
+          );
         })}
       </div>
       <motion.div className="flex flex-wrap">
         {footerLinks.map((link, i) => {
-          const { name, url } = link
+          const { name, url } = link;
           return (
             <motion.a
               key={`f_${name}`}
@@ -101,9 +101,9 @@ export const Nav: React.FC<NavProps> = ({ active, links, footerLinks }) => {
             >
               {name}
             </motion.a>
-          )
+          );
         })}
       </motion.div>
     </div>
-  )
-}
+  );
+};

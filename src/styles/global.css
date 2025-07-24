@@ -67,7 +67,7 @@
 
 [data-theme="orange"] {
   --background: oklch(0.7022 0.2004 45.1);
-  --foreground: oklch(0.98 0.02 161.03);
+  --foreground: oklch(0.1957 0 0);
 }
 
 [data-theme="blue"] {
@@ -101,11 +101,6 @@
   }
 }
 
-canvas {
-  image-rendering: pixelated;
-}
-
-/* Removing scrollbar */
 ::-webkit-scrollbar {
   display: none !important;
 }
@@ -116,27 +111,4 @@ canvas {
 
 ::-webkit-scrollbar-thumb {
   display: none !important;
-}
-
-@keyframes wave {
-  0%,
-  100% {
-    transform: scale(1) translateY(0);
-  }
-  20% {
-    transform: scale(1.1, 0.9) translateY(-2px);
-  }
-  40% {
-    transform: scale(0.95, 1.05) translateY(2px);
-  }
-  60% {
-    transform: scale(1.05, 0.95) translateY(-1px);
-  }
-  80% {
-    transform: scale(0.98, 1.02) translateY(1px);
-  }
-}
-
-.animate-wave {
-  animation: wave 1s infinite cubic-bezier(0.4, 0, 0.2, 1);
 }

@@ -25,4 +25,4 @@ dist-ssr
 
 .sonda
 stats.html
-src/config.ts
+.env
