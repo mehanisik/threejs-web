@@ -43,7 +43,7 @@ const aboutColumns: TableColumn<AboutRecord>[] = [
     label: "Languages",
     render: (about) => (
       <div className="flex flex-wrap gap-1">
-        {about.languages?.slice(0, 3).map((lang, index) => (
+        {about.languages?.slice(0, 3).map((lang: string, index: number) => (
           <Badge
             key={`${about.id}-lang-${lang}-${index}`}
             variant="secondary"
@@ -53,7 +53,7 @@ const aboutColumns: TableColumn<AboutRecord>[] = [
           </Badge>
         ))}
         {about.languages && about.languages.length > 3 && (
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="outline" className="text-xs bg-foreground/10">
             +{about.languages.length - 3}
           </Badge>
         )}
@@ -65,7 +65,7 @@ const aboutColumns: TableColumn<AboutRecord>[] = [
     label: "Tools",
     render: (about) => (
       <div className="flex flex-wrap gap-1">
-        {about.tools?.slice(0, 3).map((tool, index) => (
+        {about.tools?.slice(0, 3).map((tool: string, index: number) => (
           <Badge
             key={`${about.id}-tool-${tool}-${index}`}
             variant="secondary"
@@ -75,7 +75,7 @@ const aboutColumns: TableColumn<AboutRecord>[] = [
           </Badge>
         ))}
         {about.tools && about.tools.length > 3 && (
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="outline" className="text-xs bg-foreground/10    ">
             +{about.tools.length - 3}
           </Badge>
         )}
@@ -105,7 +105,7 @@ export function AboutManagement({
     sortConfig: { column: "created_at", ascending: false },
     editingItemId,
     onEditItem,
-    disableCreate: true, // Disable creation of new records
+    disableCreate: true,
   });
 
   const renderQuickInfo = (about: AboutRecord) => (
@@ -113,7 +113,7 @@ export function AboutManagement({
       <h4 className="font-medium line-clamp-1">
         {about.bio.substring(0, 40)}...
       </h4>
-      <p className="text-sm text-foreground/60">
+      <p className="text-sm text-foreground/50">
         {about.address || "No location"}
       </p>
     </div>
@@ -132,7 +132,7 @@ export function AboutManagement({
             isEditing={!!editingAbout}
             entityName="About"
             editingItemTitle={editingAbout?.bio.substring(0, 30)}
-            hideAddNew={true} // Hide the Add New button
+            hideAddNew={true}
           />
           <CardContent>
             <AboutForm
@@ -194,7 +194,7 @@ export function AboutManagement({
       onSwitchToEdit={onSwitchToEdit}
       renderQuickInfo={renderQuickInfo}
       editingRecord={editingAbout}
-      hideAddNew={true} // Hide the Add New button in list view
+      hideAddNew={true}
     />
   );
 }

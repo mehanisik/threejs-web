@@ -128,9 +128,7 @@ export const ServicesSection = () => {
                     <span>No Illustration</span>
                   </div>
                 )}
-                <h3 className="mb-4 text-2xl font-semibold">
-                  {service.title}
-                </h3>
+                <h3 className="mb-4 text-2xl font-semibold">{service.title}</h3>
                 <p className="flex-1 leading-relaxed text-foreground/70">
                   {service.description}
                 </p>

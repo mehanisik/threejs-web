@@ -46,29 +46,29 @@ const projectColumns: TableColumn<ProjectRecord>[] = [
   {
     key: "city",
     label: "Location",
-    className: "text-muted-foreground",
+    className: "text-foreground/50",
   },
   {
     key: "date",
     label: "Date",
-    className: "text-muted-foreground",
+    className: "text-foreground/50",
   },
   {
     key: "tags",
     label: "Tags",
     render: (project) => (
       <div className="flex flex-wrap gap-1">
-        {project.tags?.slice(0, 2).map((tag, index) => (
+        {project.tags?.slice(0, 2).map((tag: string, index: number) => (
           <Badge
             key={`${project.id}-tag-${tag}-${index}`}
-            variant="secondary"
+            variant="outline"
             className="text-xs"
           >
             {tag}
           </Badge>
         ))}
         {project.tags && project.tags.length > 2 && (
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="outline" className="text-xs bg-foreground/10">
             +{project.tags.length - 2}
           </Badge>
         )}
@@ -131,10 +131,10 @@ export function ProjectsManagement({
       transition={{ duration: 0.2 }}
     >
       <div className="space-y-6">
-        <div className="overflow-hidden rounded-md border border-border/50">
+        <div className="overflow-hidden rounded-md border border-foreground/10">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50 hover:bg-muted/50">
+              <TableRow className="bg-foreground/10 hover:bg-foreground/10">
                 {projectColumns.map((column) => (
                   <TableHead
                     key={String(column.key)}
@@ -151,7 +151,7 @@ export function ProjectsManagement({
                 <TableRow>
                   <TableCell
                     colSpan={projectColumns.length + 1}
-                    className="h-24 text-center text-muted-foreground"
+                    className="h-24 text-center text-foreground/50"
                   >
                     No projects found
                   </TableCell>
@@ -198,7 +198,7 @@ export function ProjectsManagement({
           </Table>
         </div>
 
-        <div className="text-sm text-muted-foreground text-center">
+        <div className="text-sm text-foreground/50 text-center">
           {projects?.length} {projects?.length === 1 ? "project" : "projects"}{" "}
           total
         </div>

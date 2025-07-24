@@ -23,7 +23,7 @@ export function TableActions<T extends BaseRecord>({
         onClick={() => onEdit(record)}
         variant="ghost"
         size="sm"
-        className="h-8 w-8 p-0 hover:bg-foreground/10"
+        className="h-8 w-8 p-0 hover:bg-foreground/10 rounded-full"
         title={`Edit ${entityName}`}
       >
         <Edit className="w-4 h-4" />
@@ -32,7 +32,7 @@ export function TableActions<T extends BaseRecord>({
         onClick={() => onDelete(record.id, entityName)}
         variant="ghost"
         size="sm"
-        className="h-8 w-8 p-0 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+        className="h-8 w-8 p-0 text-destructive/70 hover:text-destructive hover:bg-destructive/10 rounded-full1"
         title={`Delete ${entityName}`}
       >
         <Trash2 className="w-4 h-4" />

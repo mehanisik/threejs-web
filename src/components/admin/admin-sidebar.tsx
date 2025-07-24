@@ -54,7 +54,7 @@ export function AdminSidebar({
   onToggleCollapse,
 }: AdminSidebarProps) {
   return (
-    <div className="h-full border-r border-border/40 bg-background flex flex-col">
+    <div className="h-full border-r border-foreground/10 bg-background text-foreground flex flex-col">
       <div className="p-4 flex items-center justify-between">
         <div
           className={cn(
@@ -91,17 +91,14 @@ export function AdminSidebar({
                 className={cn(
                   "w-full justify-start h-10 px-3",
                   isActive
-                    ? "bg-primary/10 text-primary font-medium"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50",
+                    ? "bg-foreground/10 text-foreground font-semibold"
+                    : "text-foreground/50 hover:text-foreground hover:bg-foreground/10",
                   collapsed ? "flex justify-center" : "flex items-center",
                 )}
                 onClick={() => onTabChange(tab.id)}
               >
                 <Icon
-                  className={cn(
-                    "h-5 w-5",
-                    !isActive && "text-muted-foreground",
-                  )}
+                  className={cn("h-5 w-5", !isActive && "text-foreground/50")}
                 />
                 {!collapsed && (
                   <span className="ml-3 text-sm">{tab.label}</span>
@@ -113,9 +110,9 @@ export function AdminSidebar({
       </div>
       <div className="p-4">
         {!collapsed && (
-          <div className="rounded-md bg-muted p-3">
+          <div className="rounded-md bg-foreground/10 p-3">
             <div className="text-xs font-medium mb-1">Admin Panel</div>
-            <div className="text-xs text-muted-foreground">v1.0.0</div>
+            <div className="text-xs text-foreground/50">v1.0.0</div>
           </div>
         )}
       </div>

@@ -153,8 +153,6 @@ export function ManagementView<T extends BaseRecord>({
           </div>
         </CardContent>
       </Card>
-
-      
     </motion.div>
   );
 }

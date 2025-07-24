@@ -2,6 +2,7 @@ import type { User } from "@supabase/supabase-js";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { ThemeSwitcher } from "@/components/layout/theme-switcher";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth";
@@ -102,7 +103,7 @@ export function AdminDashboard({
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex text-foreground font-mono">
       <div
         className={`${sidebarCollapsed ? "w-16" : "w-64"} flex-shrink-0 h-screen sticky top-0 hidden lg:block transition-all duration-300`}
       >
@@ -126,7 +127,7 @@ export function AdminDashboard({
           onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
         />
 
-        <main className="flex-1 p-4 lg:p-8 overflow-y-auto bg-background/50">
+        <main className="flex-1 p-4 lg:p-8 overflow-y-auto bg-background/50 text-foreground">
           <motion.div
             key={activeTab}
             initial={{ opacity: 0, y: 10 }}
@@ -139,7 +140,7 @@ export function AdminDashboard({
                 <h1 className="text-2xl font-light tracking-tight">
                   {getTabTitle()}
                 </h1>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-sm text-foreground/60 mt-1">
                   {getSubtitle()}
                 </p>
               </div>
@@ -152,12 +153,13 @@ export function AdminDashboard({
                   </Button>
                 )}
             </div>
-            <Card className="border-border/40 shadow-sm bg-background/80 backdrop-blur-sm">
+            <Card className="border-foreground/10 shadow-sm bg-background/80 backdrop-blur-sm">
               <div className="p-6">{renderContent()}</div>
             </Card>
           </motion.div>
         </main>
       </div>
+      <ThemeSwitcher />
     </div>
   );
 }

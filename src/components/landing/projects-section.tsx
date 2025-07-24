@@ -174,7 +174,7 @@ export function ProjectsSection() {
             title: project.title,
             subtitle: project.city ?? "",
             href: project.url ?? "",
-            imgSrc: project.image ?? "",
+            imgSrc: project.image_url ?? "",
           })) ?? []
         }
         containerRef={containerRef}

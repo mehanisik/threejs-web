@@ -240,7 +240,7 @@ export function ProjectPage() {
               animate="visible"
               className="w-full h-full"
             >
-              {project?.image && (
+              {project?.image_url && (
                 <Carousel
                   orientation="vertical"
                   className="w-full h-full"
@@ -257,7 +257,7 @@ export function ProjectPage() {
                         className="w-full h-full border border-foreground/10 hover:border-foreground/20 transition-colors duration-300 overflow-hidden group"
                       >
                         <img
-                          src={project.image}
+                          src={project.image_url}
                           alt={`${project.title} preview`}
                           className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-110"
                           loading="lazy"

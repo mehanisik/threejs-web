@@ -44,6 +44,6 @@ export function useAdminData<T extends TableName>(
     fetchError,
     isEmpty: records?.length === 0 && !isLoading,
     total: records?.length || 0,
-    refresh,
+    refresh: fetchRecords,
   };
 }

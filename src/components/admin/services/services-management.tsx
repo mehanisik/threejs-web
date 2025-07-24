@@ -30,14 +30,14 @@ const serviceColumns: TableColumn<ServiceRecord>[] = [
   {
     key: "service_code",
     label: "Code",
-    className: "w-32 font-mono text-sm text-muted-foreground",
+    className: "w-32 font-mono text-sm text-foreground/50",
   },
   {
     key: "description",
     label: "Description",
     render: (service) => (
       <div className="max-w-md">
-        <p className="text-sm text-muted-foreground truncate">
+        <p className="text-sm text-foreground/50 truncate">
           {service.description || "—"}
         </p>
       </div>
@@ -99,10 +99,10 @@ export function ServicesManagement({
       transition={{ duration: 0.2 }}
     >
       <div className="space-y-6">
-        <div className="overflow-hidden rounded-md border border-border/50">
+        <div className="overflow-hidden rounded-md border border-foreground/10">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50 hover:bg-muted/50">
+              <TableRow className="bg-foreground/10 hover:bg-foreground/10">
                 {serviceColumns.map((column) => (
                   <TableHead
                     key={String(column.key)}
@@ -119,7 +119,7 @@ export function ServicesManagement({
                 <TableRow>
                   <TableCell
                     colSpan={serviceColumns.length + 1}
-                    className="h-24 text-center text-muted-foreground"
+                    className="h-24 text-center text-foreground/50"
                   >
                     No services found
                   </TableCell>
@@ -166,7 +166,7 @@ export function ServicesManagement({
           </Table>
         </div>
 
-        <div className="text-sm text-muted-foreground text-center">
+        <div className="text-sm text-foreground/50 text-center">
           {services?.length} {services?.length === 1 ? "service" : "services"}{" "}
           total
         </div>

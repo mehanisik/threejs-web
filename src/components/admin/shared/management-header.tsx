@@ -29,7 +29,7 @@ export function ManagementHeader({
               onClick={onAddNew}
               variant="outline"
               size="sm"
-              className="border-foreground/20 hover:border-foreground/40"
+              className="border-foreground/20 hover:border-foreground/40 rounded-full"
             >
               <Plus className="w-4 h-4 mr-2" />
               {addButtonText}
