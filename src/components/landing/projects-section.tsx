@@ -7,10 +7,8 @@ import { useSupabaseTable } from "@/hooks/use-supabase-query";
 import { ProjectModal } from "../ui/project-modal";
 
 export function ProjectsSection() {
-  const { records: projects } = useSupabaseTable("projects", "*", {
-    column: "number",
-    ascending: true,
-  });
+  const { records: projects } = useSupabaseTable("projects");
+  const { records: images } = useSupabaseTable("images");
 
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null!);
@@ -81,7 +79,9 @@ export function ProjectsSection() {
               transition={{ duration: 0.6, delay: 0.3 + idx * 0.1 }}
               onMouseEnter={() => setActiveIdx(idx)}
               onMouseLeave={() => setActiveIdx(null)}
-              onClick={() => project.url && setLocation(project.url)}
+              onClick={() =>
+                project.external_url && setLocation(project.external_url)
+              }
               className="group cursor-pointer"
             >
               <div className="border border-foreground/15 hover:border-foreground/40 transition-all duration-300 p-6 md:p-8 bg-background">
@@ -94,7 +94,7 @@ export function ProjectsSection() {
                         transition={{ duration: 0.2 }}
                       >
                         <span className="text-xs md:text-sm font-mono text-foreground/50 tracking-wider">
-                          {project.number?.toString().padStart(3, "0")}
+                          {project.order_index?.toString().padStart(3, "0")}
                         </span>
                       </motion.div>
 
@@ -173,8 +173,9 @@ export function ProjectsSection() {
           projects?.map((project) => ({
             title: project.title,
             subtitle: project.city ?? "",
-            href: project.url ?? "",
-            imgSrc: project.image_url ?? "",
+            href: project.external_url ?? "",
+            imgSrc:
+              images?.filter((i) => i.project_id === project.id)[0]?.url ?? "",
           })) ?? []
         }
         containerRef={containerRef}

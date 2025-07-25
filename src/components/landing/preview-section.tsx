@@ -4,8 +4,7 @@ import { useHackerText } from "@/hooks/use-hacker-text";
 import { useSupabaseTable } from "@/hooks/use-supabase-query";
 
 export function PreviewSection() {
-  const { records } = useSupabaseTable("about_images");
-  console.log(records);
+  const { records: images } = useSupabaseTable("images");
   const inViewRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(inViewRef, { amount: 0.3, once: true });
   const titleHacker = useHackerText("Portfolio Gallery");
@@ -30,7 +29,7 @@ export function PreviewSection() {
   const y3 = useTransform(scrollYProgress, [0, 1], [0, height * 1.25]);
   const y4 = useTransform(scrollYProgress, [0, 1], [0, height * 3]);
 
-  const previewImages = records?.map((record) => record.image_url) || [];
+  const previewImages = images?.filter((i) => i.type === "preview") || [];
   const columns = [
     {
       images: previewImages.slice(0, 3),
@@ -171,7 +170,7 @@ export function PreviewSection() {
                 >
                   <div className="w-full h-full border border-foreground/10 group-hover:border-foreground/20 transition-colors duration-300 overflow-hidden">
                     <img
-                      src={imageSrc || ""}
+                      src={imageSrc.url}
                       alt={`Gallery artwork ${columnIndex + 1}-${imageIndex + 1}`}
                       className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110 group-hover:contrast-105"
                       loading="lazy"

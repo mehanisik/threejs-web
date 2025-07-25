@@ -30,11 +30,11 @@ export const ServicesSection = () => {
     isMobile ? ["0%", "0%"] : ["0%", "-80%"],
   );
 
-  const illustrationMap: Record<string, React.FC<{ className?: string }>> = {
-    "Logo Design": LogoDesignIllustration,
+  const illustrationMap = {
     "Brand Identity": BrandIdentityIllustration,
-    "Print Design": PrintDesignIllustration,
     "Digital Design": DigitalDesignIllustration,
+    "Logo Design": LogoDesignIllustration,
+    "Print Design": PrintDesignIllustration,
   };
 
   return (
@@ -103,7 +103,8 @@ export const ServicesSection = () => {
           transition={{ duration: 0.7, delay: 0.2 }}
         >
           {services?.map((service, idx) => {
-            const Illustration = illustrationMap[service.title];
+            const Illustration =
+              illustrationMap[service.title as keyof typeof illustrationMap];
             return (
               <motion.div
                 key={service.id}

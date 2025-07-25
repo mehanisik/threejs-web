@@ -3,9 +3,7 @@ import { useHackerText } from "@/hooks/use-hacker-text";
 import { useSupabaseTable } from "@/hooks/use-supabase-query";
 
 export function AboutSection() {
-  const { records: aboutData } = useSupabaseTable("about");
-  const about = aboutData?.[0];
-
+  const { records: images } = useSupabaseTable("images");
   const aboutHacker = useHackerText("About Me");
 
   return (
@@ -75,7 +73,7 @@ export function AboutSection() {
             />
 
             <motion.img
-              src={about?.portrait_url || ""}
+              src={images?.filter((i) => i.type === "about")[0]?.url || ""}
               alt="Portrait"
               className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
               drag
@@ -152,8 +150,9 @@ export function AboutSection() {
               viewport={{ once: true, amount: 0.6 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              {about?.bio ||
-                "Passionate designer and developer creating digital experiences that matter. With expertise in modern web technologies and a keen eye for design, I build solutions that are both beautiful and functional."}
+              {
+                "Passionate designer and developer creating digital experiences that matter. With expertise in modern web technologies and a keen eye for design, I build solutions that are both beautiful and functional."
+              }
             </motion.p>
 
             <motion.div
@@ -193,7 +192,7 @@ export function AboutSection() {
                     transition={{ duration: 0.8, delay: 0.7 }}
                   />
                   <p className="text-sm md:text-base lg:text-lg font-light text-foreground group-hover:text-foreground/70 transition-colors duration-300">
-                    {about?.address || "Earth"}
+                    Warsaw, Poland
                   </p>
                 </div>
               </div>
@@ -220,7 +219,7 @@ export function AboutSection() {
                     transition={{ duration: 0.8, delay: 0.9 }}
                   />
                   <p className="text-sm md:text-base lg:text-lg font-light text-foreground group-hover:text-foreground/70 transition-colors duration-300">
-                    {about?.languages?.join(" / ") || "English"}
+                    English
                   </p>
                 </div>
               </div>
@@ -247,15 +246,13 @@ export function AboutSection() {
                     transition={{ duration: 0.8, delay: 1.1 }}
                   />
                   <div className="flex flex-wrap gap-2 md:gap-3">
-                    {(
-                      about?.tools || [
-                        "React",
-                        "TypeScript",
-                        "Node.js",
-                        "Design",
-                        "UI/UX",
-                      ]
-                    ).map((tool, index) => (
+                    {[
+                      "Figma",
+                      "Photoshop",
+                      "Illustrator",
+                      "Premiere Pro",
+                      "After Effects",
+                    ].map((tool, index) => (
                       <motion.span
                         key={tool}
                         className="px-2 md:px-3 py-1 text-xs md:text-sm bg-foreground/5 border border-foreground/20 rounded text-foreground/80"
@@ -270,7 +267,7 @@ export function AboutSection() {
                       >
                         {tool}
                       </motion.span>
-                    )) || []}
+                    ))}
                   </div>
                 </div>
               </div>

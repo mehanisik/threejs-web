@@ -25,7 +25,8 @@ import { useSupabaseTable } from "@/hooks/use-supabase-query";
 export function ProjectPage() {
   const params = useParams();
   const { records: projects } = useSupabaseTable("projects");
-  const project = projects?.find((p) => p.number === Number(params.id));
+  const { records: images } = useSupabaseTable("images");
+  const project = projects?.find((p) => p.id === params.id);
 
   const inViewRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(inViewRef, { amount: 0.3, once: true });
@@ -90,7 +91,7 @@ export function ProjectPage() {
                     }
                     transition={{ duration: 0.8, delay: 0.2 }}
                   >
-                    {String(project?.number || "01").padStart(2, "0")}
+                    {String(project?.order_index || "01").padStart(2, "0")}
                   </motion.span>
                   <motion.h1
                     className="text-3xl md:text-5xl lg:text-7xl uppercase font-extrabold tracking-tight cursor-pointer font-mono flex-1"
@@ -161,13 +162,13 @@ export function ProjectPage() {
                     </h3>
                     <div className="space-y-4">
                       <div className="text-base font-light">2024</div>
-                      {project?.url && (
+                      {project?.external_url && (
                         <motion.div
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
                           <Link
-                            href={project.url}
+                            href={project.external_url}
                             className="inline-flex items-center gap-2 px-4 py-2 border border-foreground/30 hover:border-foreground/60 bg-transparent hover:bg-foreground/5 transition-all duration-300 text-sm"
                             target="_blank"
                             rel="noopener noreferrer"
@@ -206,7 +207,7 @@ export function ProjectPage() {
             >
               <motion.div whileHover={{ x: -5 }} transition={{ duration: 0.2 }}>
                 <Link
-                  href={`/projects/${project?.number ? project.number - 1 : 1}`}
+                  href={`/projects/${project?.order_index ? project.order_index - 1 : 1}`}
                   className="flex items-center gap-2 text-sm font-medium text-foreground/70 hover:text-foreground transition-colors duration-300 px-4 py-2 border border-foreground/20 hover:border-foreground/40 bg-transparent hover:bg-foreground/5"
                   aria-label="Previous project"
                 >
@@ -217,7 +218,7 @@ export function ProjectPage() {
 
               <motion.div whileHover={{ x: 5 }} transition={{ duration: 0.2 }}>
                 <Link
-                  href={`/projects/${project?.number ? project.number + 1 : 1}`}
+                  href={`/projects/${project?.order_index ? project.order_index + 1 : 1}`}
                   className="flex items-center gap-2 text-sm font-medium text-foreground/70 hover:text-foreground transition-colors duration-300 px-4 py-2 border border-foreground/20 hover:border-foreground/40 bg-transparent hover:bg-foreground/5"
                   aria-label="Next project"
                 >
@@ -240,49 +241,52 @@ export function ProjectPage() {
               animate="visible"
               className="w-full h-full"
             >
-              {project?.image_url && (
-                <Carousel
-                  orientation="vertical"
-                  className="w-full h-full"
-                  opts={{
-                    align: "start",
-                    loop: true,
-                  }}
-                >
-                  <CarouselContent className="h-full">
-                    <CarouselItem className="h-full flex items-center justify-center p-4 md:p-8">
-                      <motion.div
-                        whileHover={{ scale: 1.02 }}
-                        transition={{ duration: 0.4, ease: "easeOut" }}
-                        className="w-full h-full border border-foreground/10 hover:border-foreground/20 transition-colors duration-300 overflow-hidden group"
-                      >
-                        <img
-                          src={project.image_url}
-                          alt={`${project.title} preview`}
-                          className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-110"
-                          loading="lazy"
-                        />
-
-                        <div className="absolute inset-0 bg-foreground/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                        <motion.div
-                          className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                          whileHover={{ scale: 1.2 }}
-                        />
-                      </motion.div>
-                    </CarouselItem>
-                  </CarouselContent>
-
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1 }}
+              {images
+                ?.filter((i) => i.project_id === project?.id)
+                .map((image) => (
+                  <Carousel
+                    key={image.id}
+                    orientation="vertical"
+                    className="w-full h-full"
+                    opts={{
+                      align: "start",
+                      loop: true,
+                    }}
                   >
-                    <CarouselPrevious className="top-4 left-1/2 -translate-x-1/2 rotate-90 border-foreground/30 hover:border-foreground/60 bg-background/80 backdrop-blur-sm" />
-                    <CarouselNext className="bottom-4 left-1/2 -translate-x-1/2 rotate-90 border-foreground/30 hover:border-foreground/60 bg-background/80 backdrop-blur-sm" />
-                  </motion.div>
-                </Carousel>
-              )}
+                    <CarouselContent className="h-full">
+                      <CarouselItem className="h-full flex items-center justify-center p-4 md:p-8">
+                        <motion.div
+                          whileHover={{ scale: 1.02 }}
+                          transition={{ duration: 0.4, ease: "easeOut" }}
+                          className="w-full h-full border border-foreground/10 hover:border-foreground/20 transition-colors duration-300 overflow-hidden group"
+                        >
+                          <img
+                            src={image.url}
+                            alt={`${image.type} preview`}
+                            className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105 group-hover:brightness-110"
+                            loading="lazy"
+                          />
+
+                          <div className="absolute inset-0 bg-foreground/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                          <motion.div
+                            className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-foreground/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                            whileHover={{ scale: 1.2 }}
+                          />
+                        </motion.div>
+                      </CarouselItem>
+                    </CarouselContent>
+
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 1 }}
+                    >
+                      <CarouselPrevious className="top-4 left-1/2 -translate-x-1/2 rotate-90 border-foreground/30 hover:border-foreground/60 bg-background/80 backdrop-blur-sm" />
+                      <CarouselNext className="bottom-4 left-1/2 -translate-x-1/2 rotate-90 border-foreground/30 hover:border-foreground/60 bg-background/80 backdrop-blur-sm" />
+                    </motion.div>
+                  </Carousel>
+                ))}
             </motion.div>
           </motion.section>
         </div>
