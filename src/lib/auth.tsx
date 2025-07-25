@@ -17,7 +17,9 @@ const AuthContext = createContext<AuthContextType>({
   initialized: false,
   isAuthenticated: false,
   login: async () => ({ error: null }),
-  logout: async () => {},
+  logout: async () => {
+    // No-op logout for default context
+  },
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {

@@ -1,6 +1,7 @@
 import {
   createContext,
   type ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -38,33 +39,27 @@ export const AudioProvider = ({
   const fadeIntervalRef = useRef<number | null>(null);
   const isFadingRef = useRef<boolean>(false);
 
-  const fadeAudio = (
-    start: number,
-    end: number,
-    duration: number,
-    onComplete?: () => void,
-  ) => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const startTime = performance.now();
-    const changeInVolume = end - start;
-
-    if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
-    isFadingRef.current = true;
-
-    fadeIntervalRef.current = window.setInterval(() => {
-      const elapsedTime = performance.now() - startTime;
-      const progress = Math.min(elapsedTime / duration, 1);
-      audio.volume = start + changeInVolume * progress;
-
-      if (progress === 1) {
-        if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
-        isFadingRef.current = false;
-        if (onComplete) onComplete();
-      }
-    }, 16);
-  };
+  const fadeAudio = useCallback(
+    (from: number, to: number, duration: number, onEnd?: () => void) => {
+      if (!audioRef.current) return;
+      const audio = audioRef.current;
+      const step = (to - from) / (duration / 10);
+      let current = from;
+      audio.volume = from;
+      const fade = () => {
+        current += step;
+        if ((step > 0 && current >= to) || (step < 0 && current <= to)) {
+          audio.volume = to;
+          if (onEnd) onEnd();
+          return;
+        }
+        audio.volume = current;
+        setTimeout(fade, 10);
+      };
+      fade();
+    },
+    [],
+  );
 
   useEffect(() => {
     audioRef.current = new Audio(audioSource);
@@ -92,7 +87,7 @@ export const AudioProvider = ({
       audio.pause();
       audioRef.current = null;
     };
-  }, [audioSource, fadeDuration]);
+  }, [audioSource, fadeDuration, fadeAudio, isPlaying]);
 
   const toggleAudio = () => {
     const audio = audioRef.current;

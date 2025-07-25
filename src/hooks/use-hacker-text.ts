@@ -26,10 +26,10 @@ export const useHackerText = (
     const textLength = originalText.length;
 
     const interval = setInterval(() => {
-      setDisplayText((prev) =>
+      setDisplayText((_prev) =>
         originalText
           .split("")
-          .map((char, index) => {
+          .map((_char, index) => {
             if (index < iterations) {
               return originalText[index];
             }
