@@ -1,35 +1,142 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
-	"vcs": {
-		"enabled": false,
-		"clientKind": "git",
-		"useIgnoreFile": false
-	},
-	"files": {
-		"ignoreUnknown": false,
-		"includes": ["!node_modules", "!dist", "!public"]
-	},
-	"formatter": {
-		"enabled": true,
-		"indentStyle": "tab"
-	},
-	"linter": {
-		"enabled": true,
-		"rules": {
-			"recommended": true
-		}
-	},
-	"javascript": {
-		"formatter": {
-			"quoteStyle": "double"
-		}
-	},
-	"assist": {
-		"enabled": true,
-		"actions": {
-			"source": {
-				"organizeImports": "on"
-			}
-		}
-	}
+  "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "**",
+      "!node_modules",
+      "!src/components/ui",
+      "!**/dist/**",
+      "!**/public/**",
+      "!.github/**",
+      "!bun.lock",
+      "!**/*.md",
+      "!**/*.mdx",
+      "!**/tailwind.css"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "lineEnding": "lf",
+    "indentWidth": 2,
+    "lineWidth": 80
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "domains": {
+      "react": "recommended",
+      "project": "recommended"
+    },
+    "rules": {
+      "recommended": true,
+      "correctness": {
+        "noUnusedImports": "error",
+        "noUnusedVariables": "warn",
+        "useExhaustiveDependencies": "warn",
+        "noUnknownMediaFeatureName": "off",
+        "noUndeclaredVariables": "error",
+        "noInvalidUseBeforeDeclaration": "error"
+      },
+      "style": {
+        "noNonNullAssertion": "off",
+        "noUnusedTemplateLiteral": "off",
+        "noParameterAssign": "error",
+        "useAsConstAssertion": "error",
+        "useDefaultParameterLast": "error",
+        "useEnumInitializers": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
+        "useNumberNamespace": "error",
+        "noInferrableTypes": "error",
+        "noUselessElse": "error",
+        "useConsistentArrayType": "error",
+        "useForOf": "warn",
+        "useShorthandAssign": "error",
+        "useTemplate": "warn",
+        "useCollapsedElseIf": "warn",
+        "useExponentiationOperator": "error",
+        "useConsistentBuiltinInstantiation": "error",
+        "useFilenamingConvention": {
+          "level": "warn",
+          "options": {
+            "filenameCases": ["kebab-case", "camelCase"],
+            "strictCase": false
+          }
+        },
+        "noNestedTernary": "error"
+      },
+      "suspicious": {
+        "noExplicitAny": "warn",
+        "noEmptyBlockStatements": "warn",
+        "noDoubleEquals": "error",
+        "noDebugger": "warn",
+        "noGlobalIsFinite": "error",
+        "noGlobalIsNan": "error",
+        "noMisleadingCharacterClass": "error",
+        "noPrototypeBuiltins": "warn",
+        "noSelfCompare": "error",
+        "noSparseArray": "error",
+        "useAwait": "off"
+      },
+      "complexity": {
+        "noForEach": "off",
+        "useSimplifiedLogicExpression": "warn",
+        "useFlatMap": "warn"
+      },
+      "security": {
+        "noGlobalEval": "error",
+        "noDangerouslySetInnerHtml": "warn",
+        "noDangerouslySetInnerHtmlWithChildren": "error"
+      },
+      "a11y": {
+        "useKeyWithClickEvents": "warn",
+        "useValidAnchor": "warn",
+        "useAltText": "error",
+        "useButtonType": "error",
+        "useValidAriaProps": "error",
+        "useValidAriaRole": "error",
+        "useValidAriaValues": "error",
+        "noAriaUnsupportedElements": "error",
+        "noAutofocus": "warn",
+        "noDistractingElements": "error",
+        "noRedundantAlt": "error",
+        "useSemanticElements": "warn"
+      },
+      "nursery": {
+        "useSortedClasses": "off"
+      }
+    }
+  },
+  "css": {
+    "linter": {
+      "enabled": true
+    },
+    "formatter": {
+      "enabled": true,
+      "indentStyle": "space",
+      "indentWidth": 2,
+      "lineWidth": 80
+    },
+    "parser": {
+      "cssModules": true
+    }
+  },
+  "json": {
+    "parser": {
+      "allowComments": true
+    }
+  }
 }
