@@ -22,7 +22,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { createService, deleteService, updateService } from "@/lib/admin";
-import { type Service, serviceSchema } from "@/types/admin";
+import { type Service, serviceSchema } from "@/types/admin.types";
 
 interface ServiceDialogProps {
   services: Service[];

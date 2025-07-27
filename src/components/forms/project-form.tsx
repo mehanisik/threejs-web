@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import type { Project, projectSchema } from "@/types/admin";
+import type { Project, projectSchema } from "@/types/admin.types";
 
 interface ProjectFormProps {
   form: UseFormReturn<z.infer<typeof projectSchema>>;

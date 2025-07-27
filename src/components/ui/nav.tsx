@@ -52,6 +52,13 @@ const slideIn: Variants = {
 };
 
 export const Nav: React.FC<NavProps> = ({ active, links, footerLinks }) => {
+  const handleSectionScroll = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   if (!active) return null;
   return (
     <div
@@ -74,12 +81,13 @@ export const Nav: React.FC<NavProps> = ({ active, links, footerLinks }) => {
                 animate="enter"
                 exit="exit"
               >
-                <a
-                  href={href}
-                  className="no-underline text-background text-5xl hover:text-primary transition-colors duration-300"
+                <button
+                  type="button"
+                  onClick={() => handleSectionScroll(href)}
+                  className="no-underline text-background text-5xl hover:text-yellow-500 transition-colors duration-300 bg-transparent border-none cursor-pointer p-0"
                 >
                   {title}
-                </a>
+                </button>
               </motion.div>
             </div>
           );
@@ -97,7 +105,7 @@ export const Nav: React.FC<NavProps> = ({ active, links, footerLinks }) => {
               initial="initial"
               animate="enter"
               exit="exit"
-              className="w-1/2 mt-1.5 text-background hover:text-primary transition-colors duration-300"
+              className="w-1/2 mt-1.5 text-background hover:text-background/70 transition-colors duration-300"
             >
               {name}
             </motion.a>

@@ -1,0 +1,23 @@
+{
+  "name": "Muhammed Hasturk - Graphic Designer & UX/UI Specialist",
+  "short_name": "Muhammed Portfolio",
+  "description": "Creative Graphic Designer and UX/UI Specialist crafting beautiful digital experiences. Specializing in brand identity, user interface design, and visual storytelling.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity", "design"],
+  "lang": "en",
+  "dir": "ltr",
+  "scope": "/",
+  "prefer_related_applications": false
+} 

@@ -1,6 +1,12 @@
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { useRef } from "react";
+import {
+  delayedTransition,
+  scaleRevealVariants,
+  scaleXRevealVariants,
+  scrollRevealVariants,
+  useScrollReveal,
+} from "@/constants/animations";
 import { socialLinks } from "@/constants/social-links";
 import { useHackerText } from "@/hooks/use-hacker-text";
 import { FooterForm } from "../forms/footer-form";
@@ -8,32 +14,29 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 
 export function FooterSection() {
-  const inViewRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(inViewRef, { amount: 0.3, once: true });
+  const { inViewRef, isInView } = useScrollReveal();
   const titleHacker = useHackerText("Contact Me");
 
   return (
-    <footer className="w-full relative overflow-hidden">
+    <footer id="contact" className="w-full relative overflow-hidden">
       <div
         ref={inViewRef}
         className="min-h-screen flex flex-col lg:flex-row items-stretch justify-between px-4 py-8 lg:py-16"
       >
         <div className="flex-1 flex flex-col justify-between pr-0 lg:pr-8 xl:pr-16">
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-            transition={{ duration: 0.7 }}
+            variants={scrollRevealVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            transition={delayedTransition()}
             className="flex items-baseline justify-start gap-3 md:gap-6 mb-12 md:mb-16"
           >
             <motion.span
               className="text-4xl md:text-6xl lg:text-8xl font-thin text-foreground/30 font-mono"
-              initial={{ opacity: 0, rotate: -45 }}
-              animate={
-                isInView
-                  ? { opacity: 1, rotate: 0 }
-                  : { opacity: 0, rotate: -45 }
-              }
-              transition={{ duration: 0.8, delay: 0.2 }}
+              variants={scaleRevealVariants}
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+              transition={delayedTransition(0.2)}
             >
               05
             </motion.span>
@@ -62,18 +65,18 @@ export function FooterSection() {
 
           <motion.div
             className="w-24 md:w-32 lg:w-40 h-px bg-foreground/30 mb-8 md:mb-12"
-            initial={{ scaleX: 0 }}
-            animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
+            variants={scaleXRevealVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            transition={delayedTransition(0.5)}
           />
 
           <motion.div
             className="mb-8 md:mb-12"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={
-              isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }
-            }
-            transition={{ duration: 0.6, delay: 0.3 }}
+            variants={scaleRevealVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            transition={delayedTransition(0.3)}
             whileHover={{ scale: 1.1, rotate: 5 }}
           >
             <svg

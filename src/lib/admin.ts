@@ -1,6 +1,29 @@
 import type { z } from "zod";
-import type { projectSchema, serviceSchema } from "@/types/admin";
+import type { projectSchema, serviceSchema } from "@/types/admin.types";
 import supabase from "./supabase";
+
+function sanitizeFileName(fileName: string): string {
+  return fileName
+    .replace(/[^a-zA-Z0-9.-]/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_|_$/g, "");
+}
+
+export async function testStorageBucket() {
+  try {
+    const { data, error } = await supabase.storage.listBuckets();
+    if (error) {
+      return false;
+    }
+    const imagesBucket = data?.find((bucket) => bucket.name === "images");
+    if (!imagesBucket) {
+      return false;
+    }
+    return true;
+  } catch (_error) {
+    return false;
+  }
+}
 
 export async function createProject(data: z.infer<typeof projectSchema>) {
   return supabase.from("projects").insert([
@@ -49,24 +72,48 @@ export async function deleteService(id: string) {
 
 export async function uploadImage(
   file: File,
-  type: string,
+  type: "portrait" | "project" | "cover" | "preview" | "services",
   project_id?: string,
 ) {
-  const filePath = `public/${file.name}`;
-  const { data: uploadData, error: uploadError } = await supabase.storage
-    .from("images")
-    .upload(filePath, file);
-  if (uploadError) return { error: uploadError };
-  const { data: publicUrlData } = supabase.storage
-    .from("images")
-    .getPublicUrl(uploadData.path);
-  const imageUrl = publicUrlData.publicUrl;
-  if (imageUrl) {
-    return supabase
+  try {
+    const sanitizedFileName = sanitizeFileName(file.name);
+    const filePath = `public/${Date.now()}_${sanitizedFileName}`;
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
       .from("images")
-      .insert([{ url: imageUrl, type, project_id: project_id || null }]);
+      .upload(filePath, file);
+
+    if (uploadError) {
+      return { error: uploadError };
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from("images")
+      .getPublicUrl(uploadData.path);
+
+    const imageUrl = publicUrlData.publicUrl;
+
+    if (imageUrl) {
+      const insertData = {
+        url: imageUrl,
+        type,
+        project_id: project_id || null,
+      };
+
+      const { data, error } = await supabase
+        .from("images")
+        .insert([insertData]);
+
+      if (error) {
+        return { error };
+      }
+
+      return { data };
+    }
+    return { error: "No image URL generated" };
+  } catch (error) {
+    return { error };
   }
-  return { error: "No image URL" };
 }
 
 export async function deleteImage(image: { id: string; url: string }) {

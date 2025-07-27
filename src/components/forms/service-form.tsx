@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import type { Service, serviceSchema } from "@/types/admin";
+import type { Service, serviceSchema } from "@/types/admin.types";
 
 interface ServiceFormProps {
   form: UseFormReturn<z.infer<typeof serviceSchema>>;

@@ -1,13 +1,17 @@
-import { HelmetProvider, type HelmetServerState } from "react-helmet-async";
+import type { HelmetServerState } from "react-helmet-async";
 import { Route, Switch } from "wouter";
-import { MouseTrail } from "./components/ui/mouse-trail";
-import { Toaster } from "./components/ui/sonner";
-import { AuthProvider } from "./lib/auth";
-import { LenisProvider } from "./lib/lenis";
+import { LiveRegion } from "./components/accessibility/live-region";
+import { SkipLink } from "./components/accessibility/skip-link";
+import { SEOProvider } from "./components/seo/seo-provider";
 import { AdminPage } from "./pages/admin";
 import { HomePage } from "./pages/home";
 import { NotFoundPage } from "./pages/not-found";
 import { ProjectPage } from "./pages/project";
+import { Providers } from "./providers";
+
+interface AppProps {
+  helmetContext?: { helmet?: HelmetServerState };
+}
 
 function Router() {
   return (
@@ -20,22 +24,20 @@ function Router() {
   );
 }
 
-function App({
-  helmetContext,
-}: {
-  helmetContext?: { helmet?: HelmetServerState };
-}) {
+const App = ({ helmetContext }: AppProps) => {
   return (
-    <HelmetProvider context={helmetContext}>
-      <AuthProvider>
-        <LenisProvider>
-          <MouseTrail />
+    <SEOProvider helmetContext={helmetContext}>
+      <Providers>
+        <SkipLink />
+        <LiveRegion aria-live="polite" aria-atomic={true}>
+          <span>Screen reader announcements will be inserted here</span>
+        </LiveRegion>
+        <main id="main-content" tabIndex={-1}>
           <Router />
-        </LenisProvider>
-        <Toaster />
-      </AuthProvider>
-    </HelmetProvider>
+        </main>
+      </Providers>
+    </SEOProvider>
   );
-}
+};
 
 export default App;

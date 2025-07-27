@@ -21,46 +21,88 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { showErrorToast, showSuccessToast } from "@/components/ui/error-toast";
 import { deleteImage, uploadImage } from "@/lib/admin";
-import { type ImageRecord, imageSchema, type Project } from "@/types/admin";
+import {
+  type ImageRecord,
+  imageSchema,
+  type Project,
+  type Service,
+} from "@/types/admin.types";
 
 interface ImageDialogProps {
   images: ImageRecord[];
   projects: Project[];
+  services: Service[];
   refreshImages: () => void;
-  isLoadingImages: boolean;
 }
 
 export const ImageDialog: React.FC<ImageDialogProps> = ({
   images,
   projects,
+  services,
   refreshImages,
-  isLoadingImages,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const imageForm = useForm<z.infer<typeof imageSchema>>({
     resolver: zodResolver(imageSchema),
     defaultValues: {
       type: "project",
       project_id: "",
+      service_id: "",
     },
   });
 
   const handleImageSubmit = async (data: z.infer<typeof imageSchema>) => {
     if (data.file && data.file.length > 0) {
-      const files = Array.from(data.file as FileList);
-      for (const file of files) {
-        await uploadImage(file, data.type, data.project_id);
+      setIsUploading(true);
+      try {
+        const files = Array.from(data.file as FileList);
+        for (const file of files) {
+          const result = await uploadImage(
+            file,
+            data.type as
+              | "services"
+              | "project"
+              | "cover"
+              | "preview"
+              | "portrait",
+            data.project_id,
+          );
+
+          if (result.error) {
+            const errorMessage =
+              typeof result.error === "object" &&
+              result.error !== null &&
+              "message" in result.error
+                ? result.error.message
+                : "Unknown error";
+            showErrorToast(`Upload failed: ${errorMessage}`);
+            return;
+          }
+        }
+        refreshImages();
+        setIsDialogOpen(false);
+        imageForm.reset();
+        showSuccessToast("Image uploaded successfully!");
+      } catch (_error) {
+        showErrorToast("Upload failed. Please try again.");
+      } finally {
+        setIsUploading(false);
       }
-      refreshImages();
-      setIsDialogOpen(false);
-      imageForm.reset();
     }
   };
+
   const handleDeleteImage = async (image: ImageRecord) => {
-    await deleteImage(image);
-    refreshImages();
+    try {
+      await deleteImage(image);
+      refreshImages();
+      showSuccessToast("Image deleted successfully!");
+    } catch (_error) {
+      showErrorToast("Delete failed. Please try again.");
+    }
   };
 
   return (
@@ -72,8 +114,9 @@ export const ImageDialog: React.FC<ImageDialogProps> = ({
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
-              <Upload className="w-4 h-4 mr-2" /> Upload Image
+            <Button disabled={isUploading}>
+              <Upload className="w-4 h-4 mr-2" />
+              {isUploading ? "Uploading..." : "Upload Image"}
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -85,6 +128,7 @@ export const ImageDialog: React.FC<ImageDialogProps> = ({
             </DialogHeader>
             <ImageForm
               form={imageForm}
+              services={services}
               onSubmit={handleImageSubmit}
               onCancel={() => setIsDialogOpen(false)}
               projects={projects}
@@ -96,7 +140,6 @@ export const ImageDialog: React.FC<ImageDialogProps> = ({
         <ImagesGrid
           images={images}
           projects={projects}
-          isLoading={isLoadingImages}
           onDelete={handleDeleteImage}
         />
       </CardContent>

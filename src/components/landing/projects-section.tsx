@@ -1,42 +1,57 @@
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { useRef, useState } from "react";
 import { useLocation } from "wouter";
+import {
+  delayedTransition,
+  scaleXRevealVariants,
+  scrollRevealVariants,
+  useScrollReveal,
+} from "@/constants/animations";
 import { useHackerText } from "@/hooks/use-hacker-text";
-import { useSupabaseTable } from "@/hooks/use-supabase-query";
+import { useSupabase } from "@/hooks/use-supabase";
+import supabase from "@/lib/supabase";
 import { ProjectModal } from "../ui/project-modal";
 
 export function ProjectsSection() {
-  const { records: projects } = useSupabaseTable("projects");
-  const { records: images } = useSupabaseTable("images");
+  const { data: projects } = useSupabase({
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*, cover_image:images(*)")
+        .eq("cover_image.type", "cover");
+      return { data, error, status: 200, statusText: "OK" };
+    },
+  });
 
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null!);
-  const inViewRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(inViewRef, { amount: 0.3, once: true });
+  const { inViewRef, isInView } = useScrollReveal();
   const [, setLocation] = useLocation();
 
   const titleHacker = useHackerText("Featured Projects");
 
   return (
     <section
+      id="portfolio"
       className="w-full relative font-sans overflow-hidden"
       ref={containerRef}
+      style={{ position: "relative" }}
     >
       <div ref={inViewRef} className="px-4 py-8 md:py-16">
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-          transition={{ duration: 0.7 }}
+          variants={scrollRevealVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          transition={delayedTransition()}
           className="flex items-baseline justify-start gap-3 md:gap-6 mb-12 md:mb-16"
         >
           <motion.span
             className="text-4xl md:text-6xl lg:text-8xl font-thin text-foreground/30 font-mono"
-            initial={{ opacity: 0, rotate: -45 }}
-            animate={
-              isInView ? { opacity: 1, rotate: 0 } : { opacity: 0, rotate: -45 }
-            }
-            transition={{ duration: 0.8, delay: 0.2 }}
+            variants={scrollRevealVariants}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            transition={delayedTransition(0.2)}
           >
             04
           </motion.span>
@@ -65,23 +80,23 @@ export function ProjectsSection() {
 
         <motion.div
           className="w-24 md:w-32 lg:w-40 h-px bg-foreground/30 mb-8 md:mb-12"
-          initial={{ scaleX: 0 }}
-          animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
+          variants={scaleXRevealVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          transition={delayedTransition(0.5)}
         />
 
         <div className="space-y-4 md:space-y-6">
           {projects?.map((project, idx) => (
             <motion.div
               key={project.id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ duration: 0.6, delay: 0.3 + idx * 0.1 }}
+              variants={scrollRevealVariants}
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+              transition={delayedTransition(0.3 + idx * 0.1)}
               onMouseEnter={() => setActiveIdx(idx)}
               onMouseLeave={() => setActiveIdx(null)}
-              onClick={() =>
-                project.external_url && setLocation(project.external_url)
-              }
+              onClick={() => setLocation(`/projects/${project.slug}`)}
               className="group cursor-pointer"
             >
               <div className="border border-foreground/15 hover:border-foreground/40 transition-all duration-300 p-6 md:p-8 bg-background">
@@ -99,13 +114,13 @@ export function ProjectsSection() {
                       </motion.div>
 
                       <div className="flex-1 min-w-0">
-                        <motion.h3
+                        <motion.h2
                           className="text-xl md:text-2xl lg:text-3xl font-light mb-2 group-hover:text-foreground transition-colors duration-300"
                           whileHover={{ x: 5 }}
                           transition={{ duration: 0.2 }}
                         >
                           {project.title}
-                        </motion.h3>
+                        </motion.h2>
 
                         <div className="flex flex-wrap items-center gap-4 md:gap-8 text-sm text-foreground/70">
                           {project.city && (
@@ -120,14 +135,16 @@ export function ProjectsSection() {
                           )}
                           {project.tags && project.tags.length > 0 && (
                             <div className="flex flex-wrap gap-2">
-                              {project.tags.slice(0, 3).map((tag, tagIdx) => (
-                                <span
-                                  key={`${project.id}-tag-${tag}-${tagIdx}`}
-                                  className="text-xs px-2 py-1 border border-foreground/20 text-foreground/60"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
+                              {project.tags
+                                .slice(0, 3)
+                                .map((tag: string, tagIdx: number) => (
+                                  <span
+                                    key={`${project.id}-tag-${tag}-${tagIdx}`}
+                                    className="text-xs px-2 py-1 border border-foreground/20 text-foreground/60"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
                               {project.tags.length > 3 && (
                                 <span className="text-xs text-foreground/50">
                                   +{project.tags.length - 3}
@@ -174,8 +191,7 @@ export function ProjectsSection() {
             title: project.title,
             subtitle: project.city ?? "",
             href: project.external_url ?? "",
-            imgSrc:
-              images?.filter((i) => i.project_id === project.id)[0]?.url ?? "",
+            imgSrc: project.cover_image?.[0]?.url || "",
           })) ?? []
         }
         containerRef={containerRef}

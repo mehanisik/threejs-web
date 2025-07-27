@@ -3,7 +3,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useZodForm } from "@/hooks/use-zod-form";
-import { useAuth } from "@/lib/auth";
+import { useAuth } from "@/providers/auth-provider";
 
 const signInSchema = z.object({
   email: z.string().email(),

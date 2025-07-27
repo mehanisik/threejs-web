@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { showErrorToast } from "@/components/ui/error-toast";
 import { themes } from "@/constants/themes";
 import type { ThemeName } from "@/types/theme";
 
@@ -12,8 +13,8 @@ export function useTheme(): [ThemeName, (theme: ThemeName) => void] {
           return savedTheme;
         }
       }
-    } catch (_error) {
-      console.warn("localStorage not available, using default theme");
+    } catch {
+      return "dark";
     }
     return "dark";
   });
@@ -24,8 +25,8 @@ export function useTheme(): [ThemeName, (theme: ThemeName) => void] {
       if (typeof window !== "undefined") {
         localStorage.setItem("theme", theme);
       }
-    } catch (_error) {
-      console.warn("localStorage not available for theme persistence");
+    } catch {
+      showErrorToast("Error setting theme");
     }
   }, [theme]);
 

@@ -1,6 +1,6 @@
 import { renderToString } from "react-dom/server";
-import App from "./src/app";
 import type { HelmetServerState } from "react-helmet-async";
+import App from "./src/app";
 
 if (typeof globalThis.localStorage === "undefined") {
   const m = new Map<string, string>();

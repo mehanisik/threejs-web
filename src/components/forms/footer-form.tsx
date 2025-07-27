@@ -1,5 +1,6 @@
+import { useForm } from "@formspree/react";
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useWatch } from "react-hook-form";
 import { z } from "zod";
 import { allowedBudgets, allowedInterests } from "@/constants/form-options";
@@ -66,6 +67,8 @@ export function FooterForm() {
   const formRef = useRef<HTMLDivElement>(null);
   const isFormInView = useInView(formRef, { amount: 0.2, once: true });
 
+  const [state, handleSubmit] = useForm(import.meta.env.VITE_FORMSPREE_FORM_ID);
+
   const { form } = useZodForm(formSchema, {
     defaultValues: {
       name: "",
@@ -80,11 +83,10 @@ export function FooterForm() {
 
   const {
     register,
-    handleSubmit,
     setValue,
     reset,
     clearErrors,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     control,
   } = form;
 
@@ -93,6 +95,16 @@ export function FooterForm() {
 
   const showCustomInterest = interests?.includes("Other");
   const showCustomBudget = budget === "Custom";
+
+  const [startTime, setStartTime] = useState(Date.now());
+  const [honeypot, setHoneypot] = useState("");
+  const [spamError, setSpamError] = useState("");
+
+  useEffect(() => {
+    setStartTime(Date.now());
+    setHoneypot("");
+    setSpamError("");
+  }, []);
 
   const toggleInterest = (interest: string) => {
     const updatedInterests = interests?.includes(interest)
@@ -117,6 +129,15 @@ export function FooterForm() {
   };
 
   const onSubmit = (data: FormValues) => {
+    setSpamError("");
+    if (Date.now() - startTime < 2000) {
+      setSpamError("Form submitted too quickly. Please try again.");
+      return;
+    }
+    if (honeypot) {
+      setSpamError("Spam detected.");
+      return;
+    }
     const finalData = {
       ...data,
       interests:
@@ -128,11 +149,18 @@ export function FooterForm() {
           : data.interests,
       budget:
         showCustomBudget && data.customBudget ? data.customBudget : data.budget,
+      _gotcha: honeypot,
     };
-
-    console.log("Form submitted:", finalData);
-    reset();
+    handleSubmit(finalData);
   };
+
+  useEffect(() => {
+    if (state.succeeded) {
+      reset();
+      setStartTime(Date.now());
+      setHoneypot("");
+    }
+  }, [state.succeeded, reset]);
 
   return (
     <motion.div
@@ -143,17 +171,68 @@ export function FooterForm() {
       className="w-full"
     >
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(onSubmit)}
         className="w-full bg-background border border-foreground/15 p-6 md:p-8 lg:p-10 flex flex-col gap-8 md:gap-10"
+        autoComplete="off"
       >
+        <input
+          type="text"
+          name="_gotcha"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          style={{ display: "none" }}
+          tabIndex={-1}
+          autoComplete="off"
+        />
+        {spamError && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4"
+          >
+            <Alert variant="destructive">
+              <AlertDescription>{spamError}</AlertDescription>
+            </Alert>
+          </motion.div>
+        )}
+        {state.succeeded && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4"
+          >
+            <Alert className="border-green-500 bg-green-500/10">
+              <AlertDescription className="text-green-700">
+                Thank you! Your message has been sent successfully.
+              </AlertDescription>
+            </Alert>
+          </motion.div>
+        )}
+
+        {state.errors && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4"
+          >
+            <Alert variant="destructive">
+              <AlertDescription>
+                {typeof state.errors === "string"
+                  ? state.errors
+                  : "An error occurred while submitting the form. Please try again."}
+              </AlertDescription>
+            </Alert>
+          </motion.div>
+        )}
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isFormInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <h3 className="text-lg md:text-xl font-light mb-6 text-foreground/90">
+          <h2 className="text-lg md:text-xl font-light mb-6 text-foreground/90">
             Personal Information
-          </h3>
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <div>
               <Input
@@ -214,9 +293,9 @@ export function FooterForm() {
           animate={isFormInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <h3 className="text-lg md:text-xl font-light mb-6 text-foreground/90">
+          <h2 className="text-lg md:text-xl font-light mb-6 text-foreground/90">
             Areas of Interest
-          </h3>
+          </h2>
           <div className="flex flex-wrap gap-3 md:gap-4">
             {allowedInterests.map((interest, idx) => (
               <motion.div
@@ -303,9 +382,9 @@ export function FooterForm() {
           animate={isFormInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.3 }}
         >
-          <h3 className="text-lg md:text-xl font-light mb-6 text-foreground/90">
+          <h2 className="text-lg md:text-xl font-light mb-6 text-foreground/90">
             Project Budget (USD)
-          </h3>
+          </h2>
           <div className="flex flex-wrap gap-3 md:gap-4">
             {allowedBudgets.map((b, idx) => (
               <motion.div
@@ -392,9 +471,9 @@ export function FooterForm() {
           animate={isFormInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <h3 className="text-lg md:text-xl font-light mb-6 text-foreground/90">
+          <h2 className="text-lg md:text-xl font-light mb-6 text-foreground/90">
             Project Details
-          </h3>
+          </h2>
           <Textarea
             {...register("details")}
             placeholder="Tell me about your project, goals, and any specific requirements..."
@@ -430,10 +509,10 @@ export function FooterForm() {
           <Button
             type="submit"
             variant="outline"
-            disabled={isSubmitting}
+            disabled={state.submitting}
             className="w-full py-4 text-base md:text-lg border-2 border-foreground bg-transparent hover:bg-foreground hover:text-background text-foreground font-medium transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? (
+            {state.submitting ? (
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{
@@ -444,7 +523,7 @@ export function FooterForm() {
                 className="w-5 h-5 border-2 border-current border-t-transparent rounded-full mr-2"
               />
             ) : null}
-            {isSubmitting ? "Submitting..." : "Send Message"}
+            {state.submitting ? "Submitting..." : "Send Message"}
           </Button>
         </motion.div>
       </form>

@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import type * as z from "zod";
 import { ProjectsTable } from "@/components/admin/project-table";
 import { ProjectForm } from "@/components/forms/project-form";
@@ -22,18 +23,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { createProject, deleteProject, updateProject } from "@/lib/admin";
-import { type Project, projectSchema } from "@/types/admin";
+import { type Project, projectSchema } from "@/types/admin.types";
 
 interface ProjectDialogProps {
   projects: Project[];
   refreshProjects: () => void;
-  isLoadingProjects: boolean;
 }
 
 export const ProjectDialog: React.FC<ProjectDialogProps> = ({
   projects,
   refreshProjects,
-  isLoadingProjects,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -72,7 +71,10 @@ export const ProjectDialog: React.FC<ProjectDialogProps> = ({
   };
   const handleDeleteProject = async (id: string) => {
     const { error } = await deleteProject(id);
-    if (!error) refreshProjects();
+    if (!error) {
+      refreshProjects();
+      toast.success("Project deleted successfully");
+    }
   };
   const openEditProjectDialog = (project: Project) => {
     setEditingProject(project);
@@ -128,7 +130,6 @@ export const ProjectDialog: React.FC<ProjectDialogProps> = ({
       <CardContent>
         <ProjectsTable
           projects={projects}
-          isLoading={isLoadingProjects}
           onEdit={openEditProjectDialog}
           onDelete={handleDeleteProject}
         />

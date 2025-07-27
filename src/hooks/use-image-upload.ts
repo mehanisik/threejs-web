@@ -10,12 +10,10 @@ export function useImageUpload() {
     setUploadError(null);
 
     try {
-      // Generate unique filename
       const fileExt = file.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = fileName;
 
-      // Upload to Supabase storage
       const { data, error } = await supabase.storage
         .from("images")
         .upload(filePath, file, {
@@ -27,7 +25,6 @@ export function useImageUpload() {
         throw error;
       }
 
-      // Get public URL
       const {
         data: { publicUrl },
       } = supabase.storage.from("images").getPublicUrl(data.path);

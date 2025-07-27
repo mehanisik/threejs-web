@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { Nav } from "@/components/ui/nav";
 import { NavButton } from "@/components/ui/nav-button";
 import { navLinks } from "@/constants/nav-links";
+import { siteConfig } from "@/constants/site-config";
 import { socialLinks } from "@/constants/social-links";
 import { useNavbarVisibility } from "@/hooks/use-navbar-visibility";
 import { AudioButton } from "../ui/audio-button";
@@ -73,12 +74,13 @@ export const Navbar = () => {
   const isNavbarVisible = useNavbarVisibility(80);
 
   return (
-    <>
+    <nav aria-label="Main navigation">
       <motion.div
         className="fixed top-0 left-1/2 transform -translate-x-1/2 z-40"
         variants={indicatorVariants}
         animate={!isNavbarVisible ? "visible" : "hidden"}
         initial="hidden"
+        aria-hidden="true"
       />
 
       <motion.div
@@ -87,7 +89,11 @@ export const Navbar = () => {
         animate={isNavbarVisible ? "visible" : "hidden"}
         initial="hidden"
       >
-        <Link href="" className="flex items-center gap-2 text-foreground">
+        <Link
+          href=""
+          className="flex items-center gap-2 text-foreground"
+          aria-label="Go to homepage"
+        >
           <svg
             viewBox="0 0 32 32"
             width="32"
@@ -95,8 +101,10 @@ export const Navbar = () => {
             fill="none"
             className="w-8 h-8 text-foreground"
             xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+            role="img"
           >
-            <title>Mami Hasturk</title>
+            <title>{siteConfig.name}</title>
             <rect
               x="4"
               y="4"
@@ -114,8 +122,8 @@ export const Navbar = () => {
               strokeLinejoin="round"
             />
           </svg>
-          <span className="text-foreground font-bold text-lg tracking-tight ">
-            Mami Hasturk
+          <span className="text-foreground font-bold text-lg tracking-tight">
+            {siteConfig.name}
           </span>
         </Link>
       </motion.div>
@@ -126,10 +134,14 @@ export const Navbar = () => {
         initial="hidden"
       >
         <motion.div
-          className="bg-foreground shadow-2xl  rounded-3xl relative w-[480px] h-[650px]"
+          className="bg-foreground shadow-2xl rounded-3xl relative w-[480px] h-[650px]"
           variants={menuVariants}
           animate={isActive ? "open" : "closed"}
           initial="closed"
+          role="dialog"
+          aria-modal={isActive}
+          aria-label="Navigation menu"
+          aria-expanded={isActive}
         >
           <AnimatePresence>
             <Nav active={isActive} links={navLinks} footerLinks={socialLinks} />
@@ -140,12 +152,16 @@ export const Navbar = () => {
           toggleMenu={() => {
             setIsActive(!isActive);
           }}
+          aria-label={
+            isActive ? "Close navigation menu" : "Open navigation menu"
+          }
+          aria-expanded={isActive}
         />
       </motion.div>
 
       <div className="fixed left-8 bottom-8 z-50">
         <AudioButton />
       </div>
-    </>
+    </nav>
   );
 };

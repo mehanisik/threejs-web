@@ -3,31 +3,27 @@ import type React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import type { ImageRecord, Project } from "@/types/admin";
+import type { ImageRecord, Project } from "@/types/admin.types";
 
 interface ImagesGridProps {
   images: ImageRecord[];
   projects: Project[];
-  isLoading: boolean;
   onDelete: (image: ImageRecord) => void;
 }
 
 export const ImagesGrid: React.FC<ImagesGridProps> = ({
   images,
   projects,
-  isLoading,
   onDelete,
 }) => (
   <>
-    {isLoading && <p>Loading images...</p>}
-    {!isLoading && images?.length === 0 && <p>No images found.</p>}
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {images?.map((image) => (
         <Card key={image.id} className="overflow-hidden">
           <div className="aspect-video bg-gray-100 flex items-center justify-center">
             <img
               src={image.url}
-              alt={image.type}
+              alt={image.type || "image"}
               className="w-full h-full object-cover"
             />
           </div>

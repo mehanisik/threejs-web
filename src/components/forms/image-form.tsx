@@ -18,13 +18,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { imageSchema, Project } from "@/types/admin";
+import type { imageSchema, Project, Service } from "@/types/admin.types";
 
 interface ImageFormProps {
   form: UseFormReturn<z.infer<typeof imageSchema>>;
   onSubmit: (data: z.infer<typeof imageSchema>) => void;
   onCancel: () => void;
   projects: Project[];
+  services: Service[];
 }
 
 export const ImageForm: React.FC<ImageFormProps> = ({
@@ -32,6 +33,7 @@ export const ImageForm: React.FC<ImageFormProps> = ({
   onSubmit,
   onCancel,
   projects,
+  services,
 }) => (
   <Form {...form}>
     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -52,6 +54,7 @@ export const ImageForm: React.FC<ImageFormProps> = ({
                 <SelectItem value="project">Project</SelectItem>
                 <SelectItem value="cover">Cover</SelectItem>
                 <SelectItem value="preview">Preview</SelectItem>
+                <SelectItem value="services">Service</SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />
@@ -82,6 +85,31 @@ export const ImageForm: React.FC<ImageFormProps> = ({
           </FormItem>
         )}
       />
+      <FormField
+        control={form.control}
+        name="service_id"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Service (Optional)</FormLabel>
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select service" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {services?.map((service) => (
+                  <SelectItem key={service.id} value={service.id}>
+                    {service.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
       <FormField
         control={form.control}
         name="file"

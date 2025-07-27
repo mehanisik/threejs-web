@@ -1,10 +1,20 @@
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useHackerText } from "@/hooks/use-hacker-text";
-import { useSupabaseTable } from "@/hooks/use-supabase-query";
+import { useSupabase } from "@/hooks/use-supabase";
+import supabase from "@/lib/supabase";
 
 export function PreviewSection() {
-  const { records: images } = useSupabaseTable("images");
+  const { data: images } = useSupabase({
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("images")
+        .select("*")
+        .eq("type", "preview");
+      return { data, error, status: 200, statusText: "OK" };
+    },
+  });
+
   const inViewRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(inViewRef, { amount: 0.3, once: true });
   const titleHacker = useHackerText("Portfolio Gallery");
@@ -142,6 +152,7 @@ export function PreviewSection() {
         <div
           ref={galleryRef}
           className="h-[175vh] bg-background relative flex gap-[2vw] p-[2vw] overflow-hidden"
+          style={{ position: "relative" }}
         >
           {columns.map((column, columnIndex) => (
             <motion.div

@@ -3,6 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import Sonda from "sonda/vite";
 import { defineConfig } from "vite";
+import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
 import { vitePrerenderPlugin } from "vite-prerender-plugin";
 
 export default defineConfig({
@@ -19,6 +20,7 @@ export default defineConfig({
       renderTarget: "#root",
       prerenderScript: "/prerender.tsx",
     }),
+    ViteImageOptimizer({}),
   ],
   resolve: {
     alias: {
@@ -34,7 +36,7 @@ export default defineConfig({
     },
   },
   build: {
-    sourcemap: true,
+    sourcemap: false,
     outDir: "dist",
     emptyOutDir: true,
     chunkSizeWarningLimit: 1850,

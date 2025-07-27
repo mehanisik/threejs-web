@@ -10,18 +10,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { Project } from "@/types/admin";
+import type { Project } from "@/types/admin.types";
 
 interface ProjectsTableProps {
   projects: Project[];
-  isLoading: boolean;
   onEdit: (project: Project) => void;
   onDelete: (id: string) => void;
 }
 
 export const ProjectsTable: React.FC<ProjectsTableProps> = ({
   projects,
-  isLoading,
   onEdit,
   onDelete,
 }) => (
@@ -37,14 +35,7 @@ export const ProjectsTable: React.FC<ProjectsTableProps> = ({
       </TableRow>
     </TableHeader>
     <TableBody>
-      {isLoading && (
-        <TableRow>
-          <TableCell colSpan={6} className="text-center">
-            Loading...
-          </TableCell>
-        </TableRow>
-      )}
-      {!isLoading && projects?.length === 0 && (
+      {projects?.length === 0 && (
         <TableRow>
           <TableCell colSpan={6} className="text-center">
             No projects found.

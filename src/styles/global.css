@@ -83,14 +83,19 @@
 }
 
 [data-theme="zinc"] {
-  --background: oklch(0.5 0 0);
-  --foreground: oklch(0.98 0 0);
+  --background: oklch(0.8853 0 0);
+  --foreground: oklch(0.1742 0.0017 17.32);
 }
 
 [data-theme="rose"] {
   --background: oklch(0.6 0.2 10);
   --foreground: oklch(1 0.02 10);
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
 @layer base {
   *,
   ::after,

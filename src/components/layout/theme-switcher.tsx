@@ -66,7 +66,7 @@ export function ThemeSwitcher() {
     <div className="relative">
       <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end">
         {isExpanded && (
-          <div className="mb-4 relative">
+          <div className="mb-4 relative" id="theme-wheel">
             <div className="relative bg-background/80 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-border/20">
               <div className="relative flex flex-col items-center space-y-6">
                 <div className="text-center">
@@ -218,9 +218,12 @@ export function ThemeSwitcher() {
           <button
             onClick={handleExpand}
             type="button"
+            aria-label="Toggle theme switcher"
+            aria-expanded={isExpanded}
+            aria-controls="theme-wheel"
             className="relative bg-primary text-primary-foreground rounded-full p-4 shadow-lg hover:scale-110 transition-all duration-300 cursor-pointer"
           >
-            <Palette size={24} />
+            <Palette size={24} aria-hidden="true" />
           </button>
         </div>
       </div>

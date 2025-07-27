@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { Service } from "@/types/admin";
+import type { Service } from "@/types/admin.types";
 
 interface ServicesTableProps {
   services: Service[];
