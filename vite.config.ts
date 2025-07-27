@@ -1,10 +1,8 @@
 import path from "node:path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import Sonda from "sonda/vite";
 import { defineConfig } from "vite";
 import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
-import { vitePrerenderPlugin } from "vite-prerender-plugin";
 
 export default defineConfig({
   base: "/",
@@ -15,11 +13,6 @@ export default defineConfig({
       },
     }),
     tailwindcss(),
-    Sonda(),
-    vitePrerenderPlugin({
-      renderTarget: "#root",
-      prerenderScript: "/prerender.tsx",
-    }),
     ViteImageOptimizer({}),
   ],
   resolve: {
