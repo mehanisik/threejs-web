@@ -74,24 +74,24 @@ export const ProjectDashboard = () => {
             className="w-full h-full object-cover"
             loading="lazy"
           />
-          <div className="absolute bottom-0 left-0 right-0  p-8">
-            <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight mb-4">
+          <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white tracking-tight mb-2 sm:mb-4">
               {project.title}
             </h1>
           </div>
         </section>
       )}
 
-      <section className="w-full py-20 px-8">
-        <div className="w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 justify-between">
-            <div className="space-y-8">
-              <h2 className="text-4xl font-bold text-foreground uppercase tracking-tight">
+      <section className="w-full py-8 sm:py-12 md:py-16 lg:py-20 px-4 sm:px-6 md:px-8">
+        <div className="w-full max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 justify-between">
+            <div className="space-y-6 sm:space-y-8">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground uppercase tracking-tight">
                 About the project
               </h2>
 
               <div className="space-y-4">
-                <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
+                <div className="flex flex-wrap gap-4 sm:gap-6 text-sm text-muted-foreground">
                   {project.city && (
                     <span className="flex items-center gap-2">
                       <MapPin className="w-4 h-4" />
@@ -109,7 +109,11 @@ export const ProjectDashboard = () => {
                 {project.tags && project.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {project.tags.map((tag: string) => (
-                      <Badge key={tag} variant="secondary" className="text-sm">
+                      <Badge
+                        key={tag}
+                        variant="secondary"
+                        className="text-xs sm:text-sm"
+                      >
                         {tag}
                       </Badge>
                     ))}
@@ -118,20 +122,25 @@ export const ProjectDashboard = () => {
               </div>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {project.description && (
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground uppercase tracking-tight mb-4">
+                  <h3 className="text-xl sm:text-2xl font-bold text-foreground uppercase tracking-tight mb-3 sm:mb-4">
                     Description
                   </h3>
-                  <p className="text-lg text-foreground leading-relaxed">
+                  <p className="text-base sm:text-lg text-foreground leading-relaxed">
                     {project.description}
                   </p>
                 </div>
               )}
 
               {project.external_url && (
-                <Button asChild variant="outline" size="lg">
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="w-full sm:w-auto"
+                >
                   <a
                     href={project.external_url}
                     target="_blank"
@@ -172,8 +181,11 @@ export const ProjectDashboard = () => {
               const nextImage = remainingImages[index + 1];
               if (nextImage && index % 3 !== 2) {
                 return (
-                  <div key={img.id} className="w-full flex gap-0">
-                    <div className="w-1/2">
+                  <div
+                    key={img.id}
+                    className="w-full flex flex-col sm:flex-row gap-0"
+                  >
+                    <div className="w-full sm:w-1/2">
                       {img.url && (
                         <img
                           src={img.url}
@@ -183,7 +195,7 @@ export const ProjectDashboard = () => {
                         />
                       )}
                     </div>
-                    <div className="w-1/2">
+                    <div className="w-full sm:w-1/2">
                       {nextImage.url && (
                         <img
                           src={nextImage.url}
@@ -214,10 +226,12 @@ export const ProjectDashboard = () => {
       )}
 
       {project.images.length === 0 && (
-        <div className="flex items-center justify-center py-32">
+        <div className="flex items-center justify-center py-16 sm:py-24 md:py-32 px-4">
           <div className="text-center text-muted-foreground">
-            <ImageIcon className="mx-auto mb-4 w-12 h-12 opacity-40" />
-            <p className="text-lg">No images for this project yet.</p>
+            <ImageIcon className="mx-auto mb-4 w-8 h-8 sm:w-12 sm:h-12 opacity-40" />
+            <p className="text-base sm:text-lg">
+              No images for this project yet.
+            </p>
           </div>
         </div>
       )}

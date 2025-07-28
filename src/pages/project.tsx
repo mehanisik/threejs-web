@@ -8,13 +8,13 @@ export const ProjectPage = () => {
   return (
     <>
       <PageSEO
-        title={`Project ${id} - Mami Hasturk Portfolio`}
-        description={`View details and information about project ${id} in Mami Hasturk's portfolio. Explore the technologies used, features implemented, and development process.`}
-        keywords={`Project ${id}, Portfolio, Web Development, React, Three.js, ${id}`}
+        title={`Project ${id} - Muhammed Hasturk Portfolio`}
+        description={`View details and information about project ${id} in Muhammed Hasturk's portfolio. Explore the design process, technologies used, and creative solutions implemented.`}
+        keywords={`Project ${id}, Portfolio, Graphic Design, UX/UI, Branding, ${id}`}
         type="article"
         url={`/projects/${id}`}
         section="Portfolio"
-        tags={["Web Development", "Portfolio", "Project"]}
+        tags={["Graphic Design", "Portfolio", "Project", "UX/UI"]}
       />
       <ProjectDashboard />
     </>

@@ -1,5 +1,7 @@
 {
-  "recommendations": ["biomejs.biome"],
+  "recommendations": [
+    "denoland.vscode-deno"
+  ],
   "unwantedRecommendations": [
     "dbaeumer.jshint",
     "dbaeumer.vscode-eslint",

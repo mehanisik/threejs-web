@@ -28,13 +28,17 @@ export const AboutSection = () => {
   return (
     <section
       id="about"
-      className="w-full min-h-screen pl-6 md:pl-12 lg:pl-16 xl:pl-20 py-8 md:py-12 lg:py-16"
+      className="w-full min-h-screen px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-8 md:py-12 lg:py-16"
     >
-      <div ref={inViewRef} className="flex flex-col lg:flex-row min-h-screen">
-        <div className="flex-1 relative flex items-center justify-center p-4 md:p-8 lg:p-16">
-          <div className="absolute top-4 md:top-8 left-4 md:left-8 flex items-baseline space-x-3 md:space-x-6">
+      <div
+        ref={inViewRef}
+        className="flex flex-col lg:flex-row min-h-screen gap-8 lg:gap-12 xl:gap-16"
+      >
+        {/* Left Column - Image */}
+        <div className="flex-1 relative flex items-center justify-center p-4 md:p-8 lg:p-12">
+          <div className="absolute top-4 md:top-8 left-4 md:left-8 flex items-baseline space-x-2 md:space-x-3 lg:space-x-6">
             <motion.div
-              className="text-4xl md:text-6xl lg:text-[6rem] font-thin text-foreground/30 select-none cursor-pointer"
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-[6rem] font-thin text-foreground/30 select-none cursor-pointer"
               variants={scrollRevealVariants}
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
@@ -68,7 +72,7 @@ export const AboutSection = () => {
           </div>
 
           <motion.div
-            className="relative w-72 h-80 md:w-80 md:h-96 lg:w-96 lg:h-[28rem] xl:w-80 xl:h-96 group mt-8 lg:mt-0"
+            className="relative w-64 h-72 sm:w-72 sm:h-80 md:w-80 md:h-96 lg:w-96 lg:h-[28rem] xl:w-80 xl:h-96 group mt-8 lg:mt-0"
             variants={scaleRevealVariants}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
@@ -87,7 +91,7 @@ export const AboutSection = () => {
             />
 
             <motion.div
-              className="absolute -top-1 -left-1 md:-top-2 md:-left-2 w-3 h-3 md:w-4 md:h-4 border-l border-t border-foreground/40"
+              className="absolute -top-1 -left-1 md:-top-2 md:-left-2 w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 border-l border-t border-foreground/40"
               variants={scaleRevealVariants}
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
@@ -108,7 +112,7 @@ export const AboutSection = () => {
               }}
             />
             <motion.div
-              className="absolute -bottom-1 -right-1 md:-bottom-2 md:-right-2 w-3 h-3 md:w-4 md:h-4 border-r border-b border-foreground/40"
+              className="absolute -bottom-1 -right-1 md:-bottom-2 md:-right-2 w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 border-r border-b border-foreground/40"
               variants={scaleRevealVariants}
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
@@ -119,25 +123,25 @@ export const AboutSection = () => {
           </motion.div>
 
           <motion.div
-            className="absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2"
+            className="absolute bottom-2 sm:bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2"
             variants={scrollRevealVariants}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
             transition={delayedTransition(1.2)}
           >
-            <div className="flex items-center space-x-2 md:space-x-3">
+            <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3">
               <motion.div
-                className="w-4 md:w-8 h-px bg-foreground/30"
+                className="w-2 sm:w-4 md:w-8 h-px bg-foreground/30"
                 variants={scaleXRevealVariants}
                 initial="hidden"
                 animate={isInView ? "visible" : "hidden"}
                 transition={delayedTransition(1.4)}
               />
-              <span className="text-xs font-light tracking-widest uppercase text-foreground/60">
+              <span className="text-xs sm:text-sm font-light tracking-widest uppercase text-foreground/60">
                 Graphic Designer
               </span>
               <motion.div
-                className="w-4 md:w-8 h-px bg-foreground/30"
+                className="w-2 sm:w-4 md:w-8 h-px bg-foreground/30"
                 variants={scaleXRevealVariants}
                 initial="hidden"
                 animate={isInView ? "visible" : "hidden"}
@@ -147,7 +151,8 @@ export const AboutSection = () => {
           </motion.div>
         </div>
 
-        <div className="flex-1 flex flex-col justify-center p-4 md:p-8 lg:p-16 space-y-6 md:space-y-8 lg:space-y-16">
+        {/* Right Column - Content */}
+        <div className="flex-1 flex flex-col justify-center p-4 md:p-8 lg:p-12 space-y-4 sm:space-y-6 md:space-y-8 lg:space-y-12">
           <motion.div
             className="relative"
             variants={slideRevealVariants}
@@ -156,7 +161,7 @@ export const AboutSection = () => {
             transition={delayedTransition(0.2)}
           >
             <motion.div
-              className="absolute -left-6 md:-left-12 -top-4 md:-top-8 text-4xl md:text-[6rem] font-thin text-foreground/10 leading-none"
+              className="absolute -left-4 sm:-left-6 md:-left-12 -top-2 sm:-top-4 md:-top-8 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-[6rem] font-thin text-foreground/10 leading-none"
               variants={scrollRevealVariants}
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
@@ -166,7 +171,7 @@ export const AboutSection = () => {
             </motion.div>
 
             <motion.p
-              className="text-sm md:text-base lg:text-lg xl:text-xl font-light leading-relaxed text-foreground max-w-lg pl-4 md:pl-8"
+              className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl font-light leading-relaxed text-foreground max-w-lg pl-2 sm:pl-4 md:pl-8"
               variants={scrollRevealVariants}
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
@@ -178,7 +183,7 @@ export const AboutSection = () => {
             </motion.p>
 
             <motion.div
-              className="w-8 md:w-12 h-px bg-foreground/30 mt-4 md:mt-6 ml-4 md:ml-8"
+              className="w-6 sm:w-8 md:w-12 h-px bg-foreground/30 mt-2 sm:mt-4 md:mt-6 ml-2 sm:ml-4 md:ml-8"
               variants={scaleXRevealVariants}
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
@@ -187,7 +192,7 @@ export const AboutSection = () => {
           </motion.div>
 
           <motion.div
-            className="space-y-6 md:space-y-8 lg:space-y-12"
+            className="space-y-4 sm:space-y-6 md:space-y-8 lg:space-y-12"
             variants={scrollRevealVariants}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
@@ -201,19 +206,19 @@ export const AboutSection = () => {
               transition={delayedTransition(0.5)}
               whileHover={{ x: 5 }}
             >
-              <div className="flex flex-col sm:flex-row sm:items-baseline space-y-2 sm:space-y-0 sm:space-x-6 md:space-x-8">
-                <span className="text-xs font-medium uppercase tracking-[0.2em] text-foreground/50 sm:w-16 md:w-20">
+              <div className="flex flex-col sm:flex-row sm:items-baseline space-y-1 sm:space-y-0 sm:space-x-4 md:space-x-6 lg:space-x-8">
+                <span className="text-xs sm:text-sm font-medium uppercase tracking-[0.2em] text-foreground/50 sm:w-12 md:w-16 lg:w-20">
                   Based
                 </span>
                 <div className="flex-1">
                   <motion.div
-                    className="h-px bg-foreground/20 mb-2"
+                    className="h-px bg-foreground/20 mb-1 sm:mb-2"
                     variants={scaleXRevealVariants}
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
                     transition={delayedTransition(0.7)}
                   />
-                  <p className="text-sm md:text-base lg:text-lg font-light text-foreground group-hover:text-foreground/70 transition-colors duration-300">
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl font-light text-foreground group-hover:text-foreground/70 transition-colors duration-300">
                     Warsaw, Poland
                   </p>
                 </div>
@@ -228,19 +233,19 @@ export const AboutSection = () => {
               transition={delayedTransition(0.7)}
               whileHover={{ x: 5 }}
             >
-              <div className="flex flex-col sm:flex-row sm:items-baseline space-y-2 sm:space-y-0 sm:space-x-6 md:space-x-8">
-                <span className="text-xs font-medium uppercase tracking-[0.2em] text-foreground/50 sm:w-16 md:w-20">
+              <div className="flex flex-col sm:flex-row sm:items-baseline space-y-1 sm:space-y-0 sm:space-x-4 md:space-x-6 lg:space-x-8">
+                <span className="text-xs sm:text-sm font-medium uppercase tracking-[0.2em] text-foreground/50 sm:w-12 md:w-16 lg:w-20">
                   Speaks
                 </span>
                 <div className="flex-1">
                   <motion.div
-                    className="h-px bg-foreground/20 mb-2"
+                    className="h-px bg-foreground/20 mb-1 sm:mb-2"
                     variants={scaleXRevealVariants}
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
                     transition={delayedTransition(0.9)}
                   />
-                  <p className="text-sm md:text-base lg:text-lg font-light text-foreground group-hover:text-foreground/70 transition-colors duration-300">
+                  <p className="text-sm sm:text-base md:text-lg lg:text-xl font-light text-foreground group-hover:text-foreground/70 transition-colors duration-300">
                     English
                   </p>
                 </div>
@@ -255,19 +260,19 @@ export const AboutSection = () => {
               transition={delayedTransition(0.9)}
               whileHover={{ x: 5 }}
             >
-              <div className="flex flex-col sm:flex-row sm:items-start space-y-2 sm:space-y-0 sm:space-x-6 md:space-x-8">
-                <span className="text-xs font-medium uppercase tracking-[0.2em] text-foreground/50 sm:w-16 md:w-20 sm:mt-1">
+              <div className="flex flex-col sm:flex-row sm:items-start space-y-1 sm:space-y-0 sm:space-x-4 md:space-x-6 lg:space-x-8">
+                <span className="text-xs sm:text-sm font-medium uppercase tracking-[0.2em] text-foreground/50 sm:w-12 md:w-16 lg:w-20 sm:mt-1">
                   Skills
                 </span>
                 <div className="flex-1">
                   <motion.div
-                    className="h-px bg-foreground/20 mb-3 md:mb-4"
+                    className="h-px bg-foreground/20 mb-2 sm:mb-3 md:mb-4"
                     variants={scaleXRevealVariants}
                     initial="hidden"
                     animate={isInView ? "visible" : "hidden"}
                     transition={delayedTransition(1.1)}
                   />
-                  <div className="flex flex-wrap gap-2 md:gap-3">
+                  <div className="flex flex-wrap gap-1 sm:gap-2 md:gap-3">
                     {[
                       "Figma",
                       "Photoshop",
@@ -277,7 +282,7 @@ export const AboutSection = () => {
                     ].map((tool, index) => (
                       <motion.span
                         key={tool}
-                        className="px-2 md:px-3 py-1 text-xs md:text-sm bg-foreground/5 border border-foreground/20 rounded text-foreground/80"
+                        className="px-1 sm:px-2 md:px-3 py-1 text-xs sm:text-sm bg-foreground/5 border border-foreground/20 rounded text-foreground/80"
                         variants={scaleRevealVariants}
                         initial="hidden"
                         animate={isInView ? "visible" : "hidden"}
@@ -297,7 +302,7 @@ export const AboutSection = () => {
           </motion.div>
 
           <motion.div
-            className="absolute bottom-4 md:bottom-8 right-4 md:right-8 text-xs font-light text-foreground/30 tracking-[0.3em]"
+            className="absolute bottom-2 sm:bottom-4 md:bottom-8 right-2 sm:right-4 md:right-8 text-xs font-light text-foreground/30 tracking-[0.3em]"
             initial={{ opacity: 0, scale: 0 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, amount: 0.3 }}
