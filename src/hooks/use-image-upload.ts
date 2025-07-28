@@ -1,6 +1,33 @@
 import { useState } from "react";
 import supabase from "@/lib/supabase";
 
+function getFolderByFileExtension(fileName: string): string {
+  const extension = fileName.toLowerCase().split(".").pop();
+
+  if (
+    [
+      "mp4",
+      "webm",
+      "ogg",
+      "mov",
+      "avi",
+      "wmv",
+      "flv",
+      "mkv",
+      "3gp",
+      "3g2",
+    ].includes(extension || "")
+  ) {
+    return "videos";
+  }
+
+  if (extension === "gif") {
+    return "gifs";
+  }
+
+  return "images";
+}
+
 export function useImageUpload() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -12,7 +39,8 @@ export function useImageUpload() {
     try {
       const fileExt = file.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = fileName;
+      const folder = getFolderByFileExtension(file.name);
+      const filePath = `${folder}/${fileName}`;
 
       const { data, error } = await supabase.storage
         .from("images")

@@ -16,7 +16,7 @@ export const PageWrapper = ({ children }: PageWrapperProps) => {
           animate={{ x: 0 }}
           exit={{ x: "-100vw" }}
           transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-          className="w-full min-h-screen bg-background text-foreground  scroll-smooth"
+          className="w-full min-h-screen bg-background text-foreground  scroll-smooth background"
         >
           {children}
         </motion.div>

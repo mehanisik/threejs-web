@@ -50,7 +50,7 @@ export function AdminPage() {
       const { data, error } = await supabase
         .from("images")
         .select("*")
-        .eq("type", "preview");
+        .order("created_at", { ascending: false });
       return { data, error, status: 200, statusText: "OK" };
     },
   });

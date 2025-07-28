@@ -22,7 +22,7 @@ export const AboutSection = () => {
     },
   });
 
-  const aboutHacker = useHackerText("About Me");
+  const aboutHacker = useHackerText("About me");
   const { inViewRef, isInView } = useScrollReveal();
 
   return (
@@ -34,7 +34,6 @@ export const AboutSection = () => {
         ref={inViewRef}
         className="flex flex-col lg:flex-row min-h-screen gap-8 lg:gap-12 xl:gap-16"
       >
-        {/* Left Column - Image */}
         <div className="flex-1 relative flex items-center justify-center p-4 md:p-8 lg:p-12">
           <div className="absolute top-4 md:top-8 left-4 md:left-8 flex items-baseline space-x-2 md:space-x-3 lg:space-x-6">
             <motion.div
@@ -48,7 +47,7 @@ export const AboutSection = () => {
             >
               01{" "}
               <motion.span
-                className="text-foreground font-normal"
+                className="text-foreground font-normal uppercase"
                 variants={scrollRevealVariants}
                 initial="hidden"
                 animate={isInView ? "visible" : "hidden"}
@@ -138,7 +137,7 @@ export const AboutSection = () => {
                 transition={delayedTransition(1.4)}
               />
               <span className="text-xs sm:text-sm font-light tracking-widest uppercase text-foreground/60">
-                Graphic Designer
+                Designer
               </span>
               <motion.div
                 className="w-2 sm:w-4 md:w-8 h-px bg-foreground/30"
@@ -152,7 +151,7 @@ export const AboutSection = () => {
         </div>
 
         {/* Right Column - Content */}
-        <div className="flex-1 flex flex-col justify-center p-4 md:p-8 lg:p-12 space-y-4 sm:space-y-6 md:space-y-8 lg:space-y-12">
+        <div className="flex-1 flex flex-col justify-center p-4 md:p-8 lg:p-12 space-y-8 md:space-y-12">
           <motion.div
             className="relative"
             variants={slideRevealVariants}
@@ -177,9 +176,8 @@ export const AboutSection = () => {
               animate={isInView ? "visible" : "hidden"}
               transition={delayedTransition(0.6)}
             >
-              {
-                "Passionate designer and developer creating digital experiences that matter. With expertise in modern web technologies and a keen eye for design, I build solutions that are both beautiful and functional."
-              }
+              Creating visual stories that connect, inspire, and transform ideas
+              into meaningful experiences.
             </motion.p>
 
             <motion.div
@@ -192,7 +190,7 @@ export const AboutSection = () => {
           </motion.div>
 
           <motion.div
-            className="space-y-4 sm:space-y-6 md:space-y-8 lg:space-y-12"
+            className="space-y-6"
             variants={scrollRevealVariants}
             initial="hidden"
             animate={isInView ? "visible" : "hidden"}
@@ -235,7 +233,7 @@ export const AboutSection = () => {
             >
               <div className="flex flex-col sm:flex-row sm:items-baseline space-y-1 sm:space-y-0 sm:space-x-4 md:space-x-6 lg:space-x-8">
                 <span className="text-xs sm:text-sm font-medium uppercase tracking-[0.2em] text-foreground/50 sm:w-12 md:w-16 lg:w-20">
-                  Speaks
+                  Focus
                 </span>
                 <div className="flex-1">
                   <motion.div
@@ -246,7 +244,7 @@ export const AboutSection = () => {
                     transition={delayedTransition(0.9)}
                   />
                   <p className="text-sm sm:text-base md:text-lg lg:text-xl font-light text-foreground group-hover:text-foreground/70 transition-colors duration-300">
-                    English
+                    Brand Identity & UI/UX
                   </p>
                 </div>
               </div>
@@ -262,7 +260,7 @@ export const AboutSection = () => {
             >
               <div className="flex flex-col sm:flex-row sm:items-start space-y-1 sm:space-y-0 sm:space-x-4 md:space-x-6 lg:space-x-8">
                 <span className="text-xs sm:text-sm font-medium uppercase tracking-[0.2em] text-foreground/50 sm:w-12 md:w-16 lg:w-20 sm:mt-1">
-                  Skills
+                  Tools
                 </span>
                 <div className="flex-1">
                   <motion.div
@@ -273,28 +271,24 @@ export const AboutSection = () => {
                     transition={delayedTransition(1.1)}
                   />
                   <div className="flex flex-wrap gap-1 sm:gap-2 md:gap-3">
-                    {[
-                      "Figma",
-                      "Photoshop",
-                      "Illustrator",
-                      "Premiere Pro",
-                      "After Effects",
-                    ].map((tool, index) => (
-                      <motion.span
-                        key={tool}
-                        className="px-1 sm:px-2 md:px-3 py-1 text-xs sm:text-sm bg-foreground/5 border border-foreground/20 rounded text-foreground/80"
-                        variants={scaleRevealVariants}
-                        initial="hidden"
-                        animate={isInView ? "visible" : "hidden"}
-                        transition={delayedTransition(1.3 + index * 0.1)}
-                        whileHover={{
-                          scale: 1.05,
-                          backgroundColor: "rgba(255,255,255,0.1)",
-                        }}
-                      >
-                        {tool}
-                      </motion.span>
-                    ))}
+                    {["Figma", "Photoshop", "Illustrator", "After Effects"].map(
+                      (tool, index) => (
+                        <motion.span
+                          key={tool}
+                          className="px-1 sm:px-2 md:px-3 py-1 text-xs sm:text-sm bg-foreground/5 border border-foreground/20 rounded text-foreground/80"
+                          variants={scaleRevealVariants}
+                          initial="hidden"
+                          animate={isInView ? "visible" : "hidden"}
+                          transition={delayedTransition(1.3 + index * 0.1)}
+                          whileHover={{
+                            scale: 1.05,
+                            backgroundColor: "rgba(255,255,255,0.1)",
+                          }}
+                        >
+                          {tool}
+                        </motion.span>
+                      ),
+                    )}
                   </div>
                 </div>
               </div>

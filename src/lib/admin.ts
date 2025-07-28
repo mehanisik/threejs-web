@@ -9,20 +9,41 @@ function sanitizeFileName(fileName: string): string {
     .replace(/^_|_$/g, "");
 }
 
-export async function testStorageBucket() {
-  try {
-    const { data, error } = await supabase.storage.listBuckets();
-    if (error) {
-      return false;
-    }
-    const imagesBucket = data?.find((bucket) => bucket.name === "images");
-    if (!imagesBucket) {
-      return false;
-    }
-    return true;
-  } catch (_error) {
-    return false;
+function getFolderByType(
+  type:
+    | "portrait"
+    | "project"
+    | "cover"
+    | "preview"
+    | "services"
+    | "video"
+    | "gif",
+): string {
+  switch (type) {
+    case "portrait":
+      return "portraits";
+    case "project":
+      return "projects";
+    case "cover":
+      return "covers";
+    case "preview":
+      return "previews";
+    case "services":
+      return "services";
+    case "video":
+      return "videos";
+    case "gif":
+      return "gifs";
+    default:
+      return "misc";
   }
+}
+
+export async function testStorageBucket() {
+  const { data, error } = await supabase.storage.from("images").list("public", {
+    limit: 1,
+  });
+  return { data, error };
 }
 
 export async function createProject(data: z.infer<typeof projectSchema>) {
@@ -70,14 +91,22 @@ export async function deleteService(id: string) {
   return supabase.from("services").delete().eq("id", id);
 }
 
-export async function uploadImage(
+export async function uploadMedia(
   file: File,
-  type: "portrait" | "project" | "cover" | "preview" | "services",
+  type:
+    | "portrait"
+    | "project"
+    | "cover"
+    | "preview"
+    | "services"
+    | "video"
+    | "gif",
   project_id?: string,
 ) {
   try {
     const sanitizedFileName = sanitizeFileName(file.name);
-    const filePath = `public/${Date.now()}_${sanitizedFileName}`;
+    const folder = getFolderByType(type);
+    const filePath = `${folder}/${Date.now()}_${sanitizedFileName}`;
 
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from("images")
@@ -91,11 +120,11 @@ export async function uploadImage(
       .from("images")
       .getPublicUrl(uploadData.path);
 
-    const imageUrl = publicUrlData.publicUrl;
+    const mediaUrl = publicUrlData.publicUrl;
 
-    if (imageUrl) {
+    if (mediaUrl) {
       const insertData = {
-        url: imageUrl,
+        url: mediaUrl,
         type,
         project_id: project_id || null,
       };
@@ -110,10 +139,26 @@ export async function uploadImage(
 
       return { data };
     }
-    return { error: "No image URL generated" };
+    return { error: "No media URL generated" };
   } catch (error) {
     return { error };
   }
+}
+
+// Keep the old function name for backward compatibility
+export async function uploadImage(
+  file: File,
+  type:
+    | "portrait"
+    | "project"
+    | "cover"
+    | "preview"
+    | "services"
+    | "video"
+    | "gif",
+  project_id?: string,
+) {
+  return uploadMedia(file, type, project_id);
 }
 
 export async function deleteImage(image: { id: string; url: string }) {
@@ -124,7 +169,24 @@ export async function deleteImage(image: { id: string; url: string }) {
   if (!deleteError) {
     const urlParts = image.url.split("/");
     const fileName = urlParts[urlParts.length - 1];
-    await supabase.storage.from("images").remove([`public/${fileName}`]);
+    // Try to find the file in different folders
+    const folders = [
+      "portraits",
+      "projects",
+      "covers",
+      "previews",
+      "services",
+      "videos",
+      "gifs",
+      "images",
+      "public",
+    ];
+    for (const folder of folders) {
+      try {
+        await supabase.storage.from("images").remove([`${folder}/${fileName}`]);
+        break; // If successful, break the loop
+      } catch (error) {}
+    }
   }
   return { error: deleteError };
 }

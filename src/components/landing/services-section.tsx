@@ -27,7 +27,7 @@ export function ServicesSection() {
   const isMobile = useIsMobile();
   const { inViewRef, isInView } = useScrollReveal();
 
-  const titleHacker = useHackerText("What I Do");
+  const titleHacker = useHackerText("My Service");
 
   const { scrollYProgress } = useScroll({
     target: targetRef,
@@ -111,7 +111,7 @@ export function ServicesSection() {
             return (
               <motion.div
                 key={service.id}
-                className="group flex h-full w-[85vw] flex-shrink-0 flex-col md:w-[42vw] lg:w-[32vw] xl:w-[28vw]"
+                className="group flex h-full w-[85vw] flex-shrink-0 flex-col md:w-[42vw] lg:w-[32vw] xl:w-[28vw] card"
                 initial={{ opacity: 0, y: 30 }}
                 animate={
                   isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }

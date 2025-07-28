@@ -18,8 +18,8 @@ export function ProjectsSection() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("projects")
-        .select("*, cover_image:images(*)")
-        .eq("cover_image.type", "cover");
+        .select("*, images(*)")
+        .order("order_index", { ascending: true });
       return { data, error, status: 200, statusText: "OK" };
     },
   });
@@ -30,6 +30,14 @@ export function ProjectsSection() {
   const [, setLocation] = useLocation();
 
   const titleHacker = useHackerText("Featured Projects");
+
+  // Helper function to get cover image for a project
+  const getCoverImage = (project: any) => {
+    return (
+      project.images?.find((img: any) => img.type === "cover") ||
+      project.images?.[0]
+    );
+  };
 
   return (
     <section
@@ -191,7 +199,7 @@ export function ProjectsSection() {
             title: project.title,
             subtitle: project.city ?? "",
             href: project.external_url ?? "",
-            imgSrc: project.cover_image?.[0]?.url || "",
+            imgSrc: getCoverImage(project)?.url || "",
           })) ?? []
         }
         containerRef={containerRef}

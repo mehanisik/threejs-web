@@ -27,12 +27,20 @@ export const serviceSchema = z.object({
 
 export const imageSchema = z
   .object({
-    type: z.enum(["portrait", "project", "cover", "preview", "services"]),
+    type: z.enum([
+      "portrait",
+      "project",
+      "cover",
+      "preview",
+      "services",
+      "video",
+      "gif",
+    ]),
     project_id: z.string().optional(),
     service_id: z.string().optional(),
     file: z.any().optional(),
   })
   .refine((data) => data.file, {
-    message: "Either an image file or a URL is required",
+    message: "Either an image/video file or a URL is required",
     path: ["file"],
   });

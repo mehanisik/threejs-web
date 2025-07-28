@@ -117,6 +117,9 @@ export const ProjectModal = ({ modal, projects, containerRef }: ModalProps) => {
     },
   };
 
+  // Get the current project based on index
+  const currentProject = projects[index] || projects[0];
+
   return (
     <motion.div
       variants={scaleAnimation}
@@ -129,28 +132,18 @@ export const ProjectModal = ({ modal, projects, containerRef }: ModalProps) => {
         top: smoothMouse.y,
       }}
     >
-      <div
-        className="h-full w-full absolute transition-[top] duration-500 ease-[cubic-bezier(0.76, 0, 0.24, 1)]"
-        style={{
-          top: `${index * -100}%`,
-        }}
-      >
-        {projects.map((project, i) => {
-          const { title, imgSrc } = project;
-          return (
-            <div
-              key={title}
-              className="relative h-full flex items-center justify-center p-1 rounded-lg"
-            >
-              <img
-                src={imgSrc}
-                alt={title}
-                height={0}
-                className="h-auto rounded-lg"
-              />
-            </div>
-          );
-        })}
+      <div className="h-full w-full flex items-center justify-center p-1 rounded-lg">
+        {currentProject && (
+          <img
+            src={currentProject.imgSrc}
+            alt={currentProject.title}
+            className="h-auto max-h-full max-w-full object-cover rounded-lg"
+            onError={(e) => {
+              // Hide image if it fails to load
+              e.currentTarget.style.display = "none";
+            }}
+          />
+        )}
       </div>
     </motion.div>
   );

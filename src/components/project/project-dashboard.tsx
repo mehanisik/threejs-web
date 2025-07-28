@@ -4,12 +4,65 @@ import {
   ExternalLink,
   Image as ImageIcon,
   MapPin,
+  Play,
 } from "lucide-react";
 import { useParams } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useSupabase } from "@/hooks/use-supabase";
 import supabase from "@/lib/supabase";
+
+const isVideo = (url: string): boolean => {
+  const videoExtensions = [
+    ".mp4",
+    ".webm",
+    ".ogg",
+    ".mov",
+    ".avi",
+    ".wmv",
+    ".flv",
+    ".mkv",
+    ".3gp",
+    ".3g2",
+  ];
+  return videoExtensions.some((ext) => url.toLowerCase().includes(ext));
+};
+
+const isGif = (url: string): boolean => {
+  return url.toLowerCase().includes(".gif");
+};
+
+const MediaComponent = ({
+  url,
+  alt,
+  className,
+}: {
+  url: string;
+  alt: string;
+  className?: string;
+}) => {
+  if (isVideo(url)) {
+    return (
+      <video
+        src={url}
+        controls
+        className={className}
+        preload="metadata"
+        poster={url.replace(/\.[^/.]+$/, ".jpg")}
+      >
+        <source src={url} type="video/mp4" />
+        <track kind="captions" src="" label="English" />
+        Your browser does not support the video tag.
+      </video>
+    );
+  }
+
+  if (isGif(url)) {
+    return <img src={url} alt={alt} className={className} loading="lazy" />;
+  }
+
+  return <img src={url} alt={alt} className={className} loading="lazy" />;
+};
 
 export const ProjectDashboard = () => {
   const { id } = useParams();
@@ -37,7 +90,7 @@ export const ProjectDashboard = () => {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
           <p className="mt-2 text-muted-foreground">Loading project...</p>
         </div>
       </div>
@@ -65,19 +118,24 @@ export const ProjectDashboard = () => {
     .sort((a, b) => a.id.localeCompare(b.id));
 
   return (
-    <main className="w-full min-h-screen bg-zinc-950">
+    <main className="w-full min-h-screen bg-background">
       {firstImage && (
         <section className="relative w-full h-screen">
-          <img
-            src={firstImage.url}
+          <MediaComponent
+            url={firstImage.url}
             alt={`Project ${firstImage.type} content`}
             className="w-full h-full object-cover"
-            loading="lazy"
           />
-          <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white tracking-tight mb-2 sm:mb-4">
+          <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 bg-gradient-to-t from-background/80 via-background/40 to-transparent">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground tracking-tight mb-2 sm:mb-4 drop-shadow-lg">
               {project.title}
             </h1>
+            {isVideo(firstImage.url) && (
+              <div className="flex items-center gap-2 text-foreground/80">
+                <Play className="w-4 h-4" />
+                <span className="text-sm">Click to play video</span>
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -159,7 +217,7 @@ export const ProjectDashboard = () => {
       </section>
 
       {remainingImages.length > 0 && (
-        <div className="w-full">
+        <div className="w-full bg-muted/30">
           <div className="space-y-0">
             {remainingImages.map((img, index) => {
               const isFullWidth = index % 3 === 0;
@@ -168,11 +226,10 @@ export const ProjectDashboard = () => {
                 return (
                   <div key={img.id} className="w-full">
                     {img.url && (
-                      <img
-                        src={img.url}
+                      <MediaComponent
+                        url={img.url}
                         alt={`Project ${img.type} content`}
                         className="w-full h-auto object-cover"
-                        loading="lazy"
                       />
                     )}
                   </div>
@@ -187,21 +244,19 @@ export const ProjectDashboard = () => {
                   >
                     <div className="w-full sm:w-1/2">
                       {img.url && (
-                        <img
-                          src={img.url}
+                        <MediaComponent
+                          url={img.url}
                           alt={`Project ${img.type} content`}
                           className="w-full h-auto object-cover"
-                          loading="lazy"
                         />
                       )}
                     </div>
                     <div className="w-full sm:w-1/2">
                       {nextImage.url && (
-                        <img
-                          src={nextImage.url}
+                        <MediaComponent
+                          url={nextImage.url}
                           alt={`Project ${nextImage.type} content`}
                           className="w-full h-auto object-cover"
-                          loading="lazy"
                         />
                       )}
                     </div>
@@ -211,11 +266,10 @@ export const ProjectDashboard = () => {
               return (
                 <div key={img.id} className="w-full">
                   {img.url && (
-                    <img
-                      src={img.url}
+                    <MediaComponent
+                      url={img.url}
                       alt={`Project ${img.type} content`}
                       className="w-full h-auto object-cover"
-                      loading="lazy"
                     />
                   )}
                 </div>
@@ -230,7 +284,7 @@ export const ProjectDashboard = () => {
           <div className="text-center text-muted-foreground">
             <ImageIcon className="mx-auto mb-4 w-8 h-8 sm:w-12 sm:h-12 opacity-40" />
             <p className="text-base sm:text-lg">
-              No images for this project yet.
+              No media for this project yet.
             </p>
           </div>
         </div>
