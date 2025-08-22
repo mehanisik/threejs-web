@@ -10,7 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+
 import {
   Select,
   SelectContent,
@@ -26,6 +26,8 @@ interface ImageFormProps {
   onCancel: () => void;
   projects: Project[];
   services: Service[];
+  uploading?: boolean;
+  hasFiles?: boolean;
 }
 
 export const ImageForm: React.FC<ImageFormProps> = ({
@@ -34,9 +36,19 @@ export const ImageForm: React.FC<ImageFormProps> = ({
   onCancel,
   projects,
   services,
+  uploading = false,
+  hasFiles = false,
 }) => (
   <Form {...form}>
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+    <form
+      onSubmit={(e) => {
+        console.log("Form submit event triggered");
+        console.log("Form values:", form.getValues());
+        console.log("Form errors:", form.formState.errors);
+        form.handleSubmit(onSubmit)(e);
+      }}
+      className="space-y-4"
+    >
       <FormField
         control={form.control}
         name="type"
@@ -110,29 +122,27 @@ export const ImageForm: React.FC<ImageFormProps> = ({
         )}
       />
 
-      <FormField
-        control={form.control}
-        name="file"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Image File</FormLabel>
-            <FormControl>
-              <Input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={(e) => field.onChange(e.target.files)}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
       <div className="flex justify-end space-x-2">
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          disabled={uploading}
+        >
           Cancel
         </Button>
-        <Button type="submit">Upload Image</Button>
+        <Button
+          type="submit"
+          disabled={uploading || !hasFiles}
+          onClick={() => {
+            console.log("Upload button clicked!");
+            console.log("Button disabled?", uploading || !hasFiles);
+            console.log("Has files?", hasFiles);
+            console.log("Uploading?", uploading);
+          }}
+        >
+          {uploading ? "Uploading..." : "Upload Files"}
+        </Button>
       </div>
     </form>
   </Form>

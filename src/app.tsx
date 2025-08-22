@@ -1,3 +1,4 @@
+import { AnimatePresence } from "framer-motion";
 import type { HelmetServerState } from "react-helmet-async";
 import { Route, Switch } from "wouter";
 import { LiveRegion } from "./components/accessibility/live-region";
@@ -15,12 +16,14 @@ interface AppProps {
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={HomePage} />
-      <Route path="/projects/:id" component={ProjectPage} />
-      <Route path="/admin" component={AdminPage} />
-      <Route component={NotFoundPage} />
-    </Switch>
+    <AnimatePresence mode="wait" initial={false}>
+      <Switch>
+        <Route path="/" component={HomePage} />
+        <Route path="/projects/:slug" component={ProjectPage} />
+        <Route path="/admin" component={AdminPage} />
+        <Route component={NotFoundPage} />
+      </Switch>
+    </AnimatePresence>
   );
 }
 

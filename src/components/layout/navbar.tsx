@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, type Variants } from "motion/react";
+import { motion, type Variants } from "motion/react";
 import { useState } from "react";
 import { Link } from "wouter";
 import { Nav } from "@/components/ui/nav";
@@ -143,9 +143,7 @@ export const Navbar = () => {
           aria-label="Navigation menu"
           aria-expanded={isActive}
         >
-          <AnimatePresence>
-            <Nav active={isActive} links={navLinks} footerLinks={socialLinks} />
-          </AnimatePresence>
+          <Nav active={isActive} links={navLinks} footerLinks={socialLinks} />
         </motion.div>
         <NavButton
           isActive={isActive}

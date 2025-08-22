@@ -6,9 +6,9 @@ import {
   scrollRevealVariants,
   useScrollReveal,
 } from "@/constants/animations";
-import { useHackerText } from "@/hooks/use-hacker-text";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useSupabase } from "@/hooks/use-supabase";
+
 import supabase from "@/lib/supabase";
 
 export function ServicesSection() {
@@ -27,8 +27,6 @@ export function ServicesSection() {
   const isMobile = useIsMobile();
   const { inViewRef, isInView } = useScrollReveal();
 
-  const titleHacker = useHackerText("My Service");
-
   const { scrollYProgress } = useScroll({
     target: targetRef,
     offset: ["start start", "end start"],
@@ -44,7 +42,7 @@ export function ServicesSection() {
     <section
       id="services"
       ref={targetRef}
-      className={`${isMobile ? "h-auto" : "h-[300vh]"} relative overflow-x-clip bg-background`}
+      className={`${isMobile ? "h-auto" : "h-[300vh]"} relative overflow-x-clip`}
       style={{ position: "relative" }}
     >
       <div
@@ -70,13 +68,11 @@ export function ServicesSection() {
             </motion.span>
             <motion.h1
               className="text-4xl md:text-6xl lg:text-8xl uppercase font-extrabold tracking-tight cursor-pointer font-mono"
-              onMouseEnter={titleHacker.startHacking}
-              onMouseLeave={titleHacker.stopHacking}
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
             >
-              {titleHacker.displayText}
-              {titleHacker.isHacking && (
+              My Service
+              {isInView && (
                 <motion.span
                   className="opacity-75"
                   animate={{ opacity: [0, 1, 0] }}
@@ -119,9 +115,9 @@ export function ServicesSection() {
                 transition={{ duration: 0.6, delay: 0.3 + idx * 0.1 }}
               >
                 <div className="mb-6 aspect-[4/3] overflow-hidden rounded-lg bg-gray-200 flex items-center justify-center">
-                  {service.images[0].url ? (
+                  {service.images[0].image_url ? (
                     <img
-                      src={service.images[0].url}
+                      src={service.images[0].image_url}
                       alt={service.title}
                       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />

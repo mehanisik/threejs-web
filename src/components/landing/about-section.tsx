@@ -7,8 +7,8 @@ import {
   slideRevealVariants,
   useScrollReveal,
 } from "@/constants/animations";
-import { useHackerText } from "@/hooks/use-hacker-text";
 import { useSupabase } from "@/hooks/use-supabase";
+
 import supabase from "@/lib/supabase";
 
 export const AboutSection = () => {
@@ -18,11 +18,10 @@ export const AboutSection = () => {
         .from("images")
         .select("*")
         .eq("type", "portrait");
-      return { data, error, status: 200, statusText: "OK" };
+      return { data, error };
     },
   });
 
-  const aboutHacker = useHackerText("About me");
   const { inViewRef, isInView } = useScrollReveal();
 
   return (
@@ -42,8 +41,6 @@ export const AboutSection = () => {
               initial="hidden"
               animate={isInView ? "visible" : "hidden"}
               transition={delayedTransition(0.2)}
-              onMouseEnter={aboutHacker.startHacking}
-              onMouseLeave={aboutHacker.stopHacking}
             >
               01{" "}
               <motion.span
@@ -53,8 +50,8 @@ export const AboutSection = () => {
                 animate={isInView ? "visible" : "hidden"}
                 transition={delayedTransition(0.5)}
               >
-                {aboutHacker.displayText}
-                {aboutHacker.isHacking && (
+                About me
+                {isInView && (
                   <motion.span
                     className="opacity-75"
                     animate={{ opacity: [0, 1, 0] }}
@@ -98,7 +95,7 @@ export const AboutSection = () => {
             />
 
             <motion.img
-              src={images?.[0]?.url || undefined}
+              src={images?.[0]?.image_url || undefined}
               alt="Portrait"
               className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
               drag

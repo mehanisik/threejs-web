@@ -64,7 +64,6 @@ site_url = "http://localhost:3000"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
 additional_redirect_urls = ["https://localhost:3000"]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604800 (1 week).
-jwt_expiry = 3600
 # If disabled, the refresh token will never expire.
 enable_refresh_token_rotation = true
 # Allows refresh tokens to be reused after expiry, up to the specified interval in seconds.
@@ -300,9 +299,7 @@ secret = ""
 redirect_uri = ""
 
 # Use pre-defined map of claims that are mapped to user_metadata through JWT
-[auth.jwt]
-# The default expiry time for a JWT token. Defaults to 3600 (1 hour), maximum 604800 (1 week).
-default_group_name = "authenticated"
+# JWT configuration has been moved to the [auth] section
 
 # Configure one of the supported SMS providers: `twilio`, `messagebird`, `textlocal`, `vonage`.
 [auth.sms.twilio]
@@ -335,9 +332,6 @@ api_secret = ""
 
 # Configure one of the supported MFA providers: `totp`.
 [auth.mfa.totp]
-enabled = false
-# The issuer name displayed in the authenticator app.
-issuer = ""
 
 # Use an external OIDC server. The presence of an `[auth.external.*]` section
 # means that the external provider is enabled.

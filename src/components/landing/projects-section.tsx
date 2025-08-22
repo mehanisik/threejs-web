@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import {
   delayedTransition,
@@ -8,8 +8,8 @@ import {
   scrollRevealVariants,
   useScrollReveal,
 } from "@/constants/animations";
-import { useHackerText } from "@/hooks/use-hacker-text";
 import { useSupabase } from "@/hooks/use-supabase";
+
 import supabase from "@/lib/supabase";
 import { ProjectModal } from "../ui/project-modal";
 
@@ -20,24 +20,26 @@ export function ProjectsSection() {
         .from("projects")
         .select("*, images(*)")
         .order("order_index", { ascending: true });
-      return { data, error, status: 200, statusText: "OK" };
+      return { data, error };
     },
   });
 
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null!);
   const { inViewRef, isInView } = useScrollReveal();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
 
-  const titleHacker = useHackerText("Featured Projects");
-
-  // Helper function to get cover image for a project
-  const getCoverImage = (project: any) => {
-    return (
-      project.images?.find((img: any) => img.type === "cover") ||
-      project.images?.[0]
-    );
-  };
+  // Scroll to portfolio section when hash is present
+  useEffect(() => {
+    if (location === "/#portfolio" && containerRef.current) {
+      containerRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+      // Remove the hash from URL after scrolling
+      setLocation("/");
+    }
+  }, [location, setLocation]);
 
   return (
     <section
@@ -65,13 +67,11 @@ export function ProjectsSection() {
           </motion.span>
           <motion.h1
             className="text-4xl md:text-6xl lg:text-8xl uppercase font-extrabold tracking-tight cursor-pointer font-mono"
-            onMouseEnter={titleHacker.startHacking}
-            onMouseLeave={titleHacker.stopHacking}
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.2 }}
           >
-            {titleHacker.displayText}
-            {titleHacker.isHacking && (
+            Featured Projects
+            {isInView && (
               <motion.span
                 className="opacity-75"
                 animate={{ opacity: [0, 1, 0] }}
@@ -106,6 +106,10 @@ export function ProjectsSection() {
               onMouseLeave={() => setActiveIdx(null)}
               onClick={() => setLocation(`/projects/${project.slug}`)}
               className="group cursor-pointer"
+              whileHover={{
+                y: -5,
+                transition: { duration: 0.2, ease: "easeOut" },
+              }}
             >
               <div className="border border-foreground/15 hover:border-foreground/40 transition-all duration-300 p-6 md:p-8 bg-background">
                 <div className="flex items-center justify-between gap-4">
@@ -167,11 +171,14 @@ export function ProjectsSection() {
 
                   <motion.div
                     className="flex-shrink-0"
-                    whileHover={{ scale: 1.2, rotate: 45 }}
-                    transition={{ duration: 0.2 }}
+                    whileHover={{
+                      scale: 1.2,
+                      rotate: 45,
+                      transition: { duration: 0.3, ease: "easeOut" },
+                    }}
                   >
-                    <div className="w-10 h-10 md:w-12 md:h-12 border border-foreground/30 group-hover:border-foreground/60 transition-colors duration-300 flex items-center justify-center">
-                      <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 text-foreground/60 group-hover:text-foreground transition-colors duration-300" />
+                    <div className="w-10 h-10 md:w-12 md:h-12 border border-foreground/30 group-hover:border-foreground/60 transition-all duration-300 flex items-center justify-center group-hover:bg-foreground/5">
+                      <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 text-foreground/60 group-hover:text-foreground transition-all duration-300" />
                     </div>
                   </motion.div>
                 </div>
@@ -199,7 +206,9 @@ export function ProjectsSection() {
             title: project.title,
             subtitle: project.city ?? "",
             href: project.external_url ?? "",
-            imgSrc: getCoverImage(project)?.url || "",
+            imgSrc:
+              project.images?.find((img) => img.type === "cover")?.image_url ||
+              "",
           })) ?? []
         }
         containerRef={containerRef}

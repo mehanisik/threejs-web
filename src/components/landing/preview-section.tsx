@@ -1,6 +1,5 @@
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { useHackerText } from "@/hooks/use-hacker-text";
 import { useSupabase } from "@/hooks/use-supabase";
 import supabase from "@/lib/supabase";
 
@@ -11,13 +10,12 @@ export function PreviewSection() {
         .from("images")
         .select("*")
         .eq("type", "preview");
-      return { data, error, status: 200, statusText: "OK" };
+      return { data, error };
     },
   });
 
   const inViewRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(inViewRef, { amount: 0.3, once: true });
-  const titleHacker = useHackerText("Portfolio Gallery");
 
   const galleryRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState<{
@@ -99,13 +97,11 @@ export function PreviewSection() {
           </motion.span>
           <motion.h1
             className="text-4xl md:text-6xl lg:text-8xl uppercase font-extrabold tracking-tight cursor-pointer font-mono"
-            onMouseEnter={titleHacker.startHacking}
-            onMouseLeave={titleHacker.stopHacking}
             whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.2 }}
           >
-            {titleHacker.displayText}
-            {titleHacker.isHacking && (
+            Portfolio Gallery
+            {isInView && (
               <motion.span
                 className="opacity-75"
                 animate={{ opacity: [0, 1, 0] }}
@@ -181,7 +177,7 @@ export function PreviewSection() {
                 >
                   <div className="w-full h-full border border-foreground/10 group-hover:border-foreground/20 transition-colors duration-300 overflow-hidden">
                     <img
-                      src={imageSrc.url}
+                      src={imageSrc.image_url}
                       alt={`Gallery artwork ${columnIndex + 1}-${imageIndex + 1}`}
                       className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110 group-hover:contrast-105"
                       loading="lazy"

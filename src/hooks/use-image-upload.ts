@@ -1,6 +1,27 @@
 import { useState } from "react";
 import supabase from "@/lib/supabase";
 
+function createKebabCaseFileName(fileName: string): string {
+  // Remove file extension
+  const lastDotIndex = fileName.lastIndexOf('.');
+  const nameWithoutExt = lastDotIndex !== -1 ? fileName.slice(0, lastDotIndex) : fileName;
+  const extension = lastDotIndex !== -1 ? fileName.slice(lastDotIndex) : '';
+
+  // Convert to kebab-case: lowercase, replace spaces and special chars with hyphens
+  const kebabCaseName = nameWithoutExt
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+
+  // Add timestamp to ensure uniqueness
+  const timestamp = Date.now();
+  const finalName = kebabCaseName || 'unnamed-file';
+
+  return `${timestamp}-${finalName}${extension}`;
+}
+
 function getFolderByFileExtension(fileName: string): string {
   const extension = fileName.toLowerCase().split(".").pop();
 
@@ -37,10 +58,9 @@ export function useImageUpload() {
     setUploadError(null);
 
     try {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const kebabCaseFileName = createKebabCaseFileName(file.name);
       const folder = getFolderByFileExtension(file.name);
-      const filePath = `${folder}/${fileName}`;
+      const filePath = `${folder}/${kebabCaseFileName}`;
 
       const { data, error } = await supabase.storage
         .from("images")

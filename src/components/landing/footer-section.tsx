@@ -8,14 +8,12 @@ import {
   useScrollReveal,
 } from "@/constants/animations";
 import { socialLinks } from "@/constants/social-links";
-import { useHackerText } from "@/hooks/use-hacker-text";
 import { FooterForm } from "../forms/footer-form";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 
 export function FooterSection() {
   const { inViewRef, isInView } = useScrollReveal();
-  const titleHacker = useHackerText("Contact Me");
 
   return (
     <footer id="contact" className="w-full relative overflow-hidden">
@@ -42,13 +40,11 @@ export function FooterSection() {
             </motion.span>
             <motion.h1
               className="text-4xl md:text-6xl lg:text-8xl uppercase font-extrabold tracking-tight cursor-pointer font-mono"
-              onMouseEnter={titleHacker.startHacking}
-              onMouseLeave={titleHacker.stopHacking}
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
             >
-              {titleHacker.displayText}
-              {titleHacker.isHacking && (
+              Contact Me
+              {isInView && (
                 <motion.span
                   className="opacity-75"
                   animate={{ opacity: [0, 1, 0] }}

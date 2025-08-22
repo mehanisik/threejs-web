@@ -4,8 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 type SupabaseQueryResult<T> = {
   data: T | null;
   error: PostgrestError | null;
-  status: number;
-  statusText: string;
 };
 
 interface UseSupabaseProps<T> {

@@ -25,22 +25,16 @@ export const serviceSchema = z.object({
   order_index: z.number().min(0).optional(),
 });
 
-export const imageSchema = z
-  .object({
-    type: z.enum([
-      "portrait",
-      "project",
-      "cover",
-      "preview",
-      "services",
-      "video",
-      "gif",
-    ]),
-    project_id: z.string().optional(),
-    service_id: z.string().optional(),
-    file: z.any().optional(),
-  })
-  .refine((data) => data.file, {
-    message: "Either an image/video file or a URL is required",
-    path: ["file"],
-  });
+export const imageSchema = z.object({
+  type: z.enum([
+    "portrait",
+    "project",
+    "cover",
+    "preview",
+    "services",
+    "video",
+    "gif",
+  ]),
+  project_id: z.string().optional(),
+  service_id: z.string().optional(),
+});

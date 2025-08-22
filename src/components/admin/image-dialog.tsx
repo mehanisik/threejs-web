@@ -1,16 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Filter,
-  Grid3X3,
+  CheckSquare,
   Image as ImageIcon,
-  List,
-  Search,
+  Square,
+  Trash2,
   Upload,
 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type * as z from "zod";
-import { ImagesGrid } from "@/components/admin/images-grid";
+import { ImagesTable } from "@/components/admin/images-table";
 import { ImageForm } from "@/components/forms/image-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   Dialog,
   DialogContent,
@@ -28,15 +28,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { DragDropUpload } from "@/components/ui/drag-drop-upload";
 import { showErrorToast, showSuccessToast } from "@/components/ui/error-toast";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { deleteImage, uploadImage } from "@/lib/admin";
 import {
   type ImageRecord,
@@ -60,9 +53,15 @@ export const ImageDialog: React.FC<ImageDialogProps> = ({
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterType, setFilterType] = useState<string>("all");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const [selectedImages, setSelectedImages] = useState<Set<string>>(new Set());
+  const [deleteConfirmDialog, setDeleteConfirmDialog] = useState<{
+    open: boolean;
+    image?: ImageRecord;
+    isBulk?: boolean;
+  }>({ open: false });
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const isVideo = (url: string): boolean => {
     const videoExtensions = [
@@ -95,63 +94,160 @@ export const ImageDialog: React.FC<ImageDialogProps> = ({
 
   const totalImages = images.length;
 
-  const filteredImages = images.filter((image) => {
-    const matchesSearch =
-      image.url.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (image.type?.toLowerCase() || "").includes(searchTerm.toLowerCase());
-    const matchesFilter = filterType === "all" || image.type === filterType;
-    return matchesSearch && matchesFilter;
-  });
+  const handleFilesSelected = (files: File[]) => {
+    console.log("Files selected:", files);
+    setSelectedFiles(files);
+  };
 
   const handleImageSubmit = async (data: z.infer<typeof imageSchema>) => {
-    if (data.file && data.file.length > 0) {
-      setIsUploading(true);
-      try {
-        const files = Array.from(data.file as FileList);
-        for (const file of files) {
-          const result = await uploadImage(
-            file,
-            data.type as
-              | "services"
-              | "project"
-              | "cover"
-              | "preview"
-              | "portrait"
-              | "video"
-              | "gif",
-            data.project_id,
-          );
+    console.log("Upload started with data:", data);
+    console.log("Selected files:", selectedFiles);
 
-          if (result.error) {
-            const errorMessage =
-              typeof result.error === "object" &&
-              result.error !== null &&
-              "message" in result.error
-                ? result.error.message
-                : "Unknown error";
-            showErrorToast(`Upload failed: ${errorMessage}`);
-            return;
-          }
+    if (selectedFiles.length === 0) {
+      showErrorToast("Please select files to upload");
+      return;
+    }
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    try {
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        const progress = ((i + 1) / selectedFiles.length) * 100;
+        setUploadProgress(progress);
+
+        console.log(
+          `Uploading file ${i + 1}/${selectedFiles.length}:`,
+          file.name,
+        );
+
+        const result = await uploadImage(
+          file,
+          data.type as
+            | "services"
+            | "project"
+            | "cover"
+            | "preview"
+            | "portrait"
+            | "video"
+            | "gif",
+          data.project_id,
+        );
+
+        console.log(`Upload result for ${file.name}:`, result);
+
+        if (result.error) {
+          const errorMessage =
+            typeof result.error === "object" &&
+            result.error !== null &&
+            "message" in result.error
+              ? result.error.message
+              : "Unknown error";
+          console.error(`Upload failed for ${file.name}:`, result.error);
+          showErrorToast(`Upload failed for ${file.name}: ${errorMessage}`);
         }
-        refreshImages();
-        setIsDialogOpen(false);
-        imageForm.reset();
-        showSuccessToast("Image uploaded successfully!");
-      } catch (_error) {
-        showErrorToast("Upload failed. Please try again.");
-      } finally {
-        setIsUploading(false);
       }
+
+      refreshImages();
+      setIsDialogOpen(false);
+      setSelectedFiles([]);
+      imageForm.reset();
+      showSuccessToast(
+        `${selectedFiles.length} file(s) uploaded successfully!`,
+      );
+    } catch (_error) {
+      showErrorToast("Upload failed. Please try again.");
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
   const handleDeleteImage = async (image: ImageRecord) => {
+    setDeleteConfirmDialog({ open: true, image, isBulk: false });
+  };
+
+  const confirmDeleteImage = async () => {
+    const { image, isBulk } = deleteConfirmDialog;
+
     try {
-      await deleteImage(image);
+      if (isBulk && selectedImages.size > 0) {
+        // Bulk delete
+        const imagesToDelete = images.filter((img) =>
+          selectedImages.has(img.id),
+        );
+
+        let successCount = 0;
+        let errorCount = 0;
+
+        for (const img of imagesToDelete) {
+          const result = await deleteImage({ id: img.id, url: img.image_url });
+          if (result.error) {
+            console.error("Failed to delete image:", img.id, result.error);
+            errorCount++;
+          } else {
+            successCount++;
+          }
+        }
+
+        setSelectedImages(new Set());
+
+        if (errorCount === 0) {
+          showSuccessToast(`${successCount} images deleted successfully!`);
+        } else if (successCount === 0) {
+          showErrorToast(`Failed to delete ${errorCount} images.`);
+        } else {
+          showSuccessToast(
+            `${successCount} images deleted successfully. ${errorCount} failed.`,
+          );
+        }
+      } else if (image) {
+        // Single delete
+        const result = await deleteImage({
+          id: image.id,
+          url: image.image_url,
+        });
+        if (result.error) {
+          console.error("Failed to delete image:", image.id, result.error);
+          showErrorToast("Delete failed. Please try again.");
+          return;
+        }
+        showSuccessToast("Image deleted successfully!");
+      }
+
       refreshImages();
-      showSuccessToast("Image deleted successfully!");
-    } catch (_error) {
+    } catch (error) {
+      console.error("Unexpected error in confirmDeleteImage:", error);
       showErrorToast("Delete failed. Please try again.");
+    } finally {
+      setDeleteConfirmDialog({ open: false });
+    }
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedImages.size === 0) {
+      showErrorToast("Please select images to delete");
+      return;
+    }
+    setDeleteConfirmDialog({ open: true, isBulk: true });
+  };
+
+  const toggleImageSelection = (imageId: string) => {
+    const newSelection = new Set(selectedImages);
+    if (newSelection.has(imageId)) {
+      newSelection.delete(imageId);
+    } else {
+      newSelection.add(imageId);
+    }
+    setSelectedImages(newSelection);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedImages.size === images.length) {
+      setSelectedImages(new Set());
+    } else {
+      setSelectedImages(new Set(images.map((img) => img.id)));
     }
   };
 
@@ -181,7 +277,8 @@ export const ImageDialog: React.FC<ImageDialogProps> = ({
                 <p className="text-2xl font-bold text-green-700">
                   {
                     images.filter(
-                      (img) => !(isVideo(img.url) || isGif(img.url)),
+                      (img) =>
+                        !(isVideo(img.image_url) || isGif(img.image_url)),
                     ).length
                   }
                 </p>
@@ -200,8 +297,9 @@ export const ImageDialog: React.FC<ImageDialogProps> = ({
                 </p>
                 <p className="text-2xl font-bold text-purple-700">
                   {
-                    images.filter((img) => isVideo(img.url) || isGif(img.url))
-                      .length
+                    images.filter(
+                      (img) => isVideo(img.image_url) || isGif(img.image_url),
+                    ).length
                   }
                 </p>
               </div>
@@ -230,87 +328,119 @@ export const ImageDialog: React.FC<ImageDialogProps> = ({
                 {isUploading ? "Uploading..." : "Upload Media"}
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Upload New Media</DialogTitle>
                 <DialogDescription>
                   Upload images, videos, or GIFs and specify their details
                 </DialogDescription>
               </DialogHeader>
-              <ImageForm
-                form={imageForm}
-                services={services}
-                onSubmit={handleImageSubmit}
-                onCancel={() => setIsDialogOpen(false)}
-                projects={projects}
-              />
+              <div className="space-y-6">
+                <DragDropUpload
+                  onFilesSelected={handleFilesSelected}
+                  uploading={isUploading}
+                  uploadProgress={uploadProgress}
+                />
+                <ImageForm
+                  form={imageForm}
+                  services={services}
+                  onSubmit={handleImageSubmit}
+                  onCancel={() => {
+                    setIsDialogOpen(false);
+                    setSelectedFiles([]);
+                  }}
+                  projects={projects}
+                  uploading={isUploading}
+                  hasFiles={selectedFiles.length > 0}
+                />
+              </div>
             </DialogContent>
           </Dialog>
         </CardHeader>
 
         <CardContent className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Search images..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-
-            <div className="flex gap-2">
-              <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-32">
-                  <Filter className="w-4 h-4 mr-2" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="portrait">Portrait</SelectItem>
-                  <SelectItem value="project">Project</SelectItem>
-                  <SelectItem value="cover">Cover</SelectItem>
-                  <SelectItem value="preview">Preview</SelectItem>
-                  <SelectItem value="services">Services</SelectItem>
-                  <SelectItem value="video">Video</SelectItem>
-                  <SelectItem value="gif">GIF</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <div className="flex border rounded-md">
+          {/* Bulk operations bar */}
+          {selectedImages.size > 0 && (
+            <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                  {selectedImages.size} image(s) selected
+                </span>
                 <Button
-                  variant={viewMode === "grid" ? "default" : "ghost"}
+                  variant="outline"
                   size="sm"
-                  onClick={() => setViewMode("grid")}
-                  className="rounded-r-none"
+                  onClick={() => setSelectedImages(new Set())}
                 >
-                  <Grid3X3 className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant={viewMode === "list" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("list")}
-                  className="rounded-l-none"
-                >
-                  <List className="w-4 h-4" />
+                  Clear Selection
                 </Button>
               </div>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleBulkDelete}
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete Selected
+              </Button>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="text-sm text-muted-foreground">
+                Total: {totalImages} images
+              </div>
+              {images.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleSelectAll}
+                  className="text-xs"
+                >
+                  {selectedImages.size === images.length ? (
+                    <>
+                      <CheckSquare className="w-3 h-3 mr-1" />
+                      Deselect All
+                    </>
+                  ) : (
+                    <>
+                      <Square className="w-3 h-3 mr-1" />
+                      Select All ({images.length})
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
           </div>
 
-          <div className="text-sm text-muted-foreground">
-            Showing {filteredImages.length} of {totalImages} images
-          </div>
-
-          <ImagesGrid
-            images={filteredImages}
+          <ImagesTable
+            images={images}
             projects={projects}
+            selectedImages={selectedImages}
+            onToggleSelection={toggleImageSelection}
             onDelete={handleDeleteImage}
-            viewMode={viewMode}
           />
         </CardContent>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        open={deleteConfirmDialog.open}
+        onOpenChange={(open) => setDeleteConfirmDialog({ open })}
+        title={
+          deleteConfirmDialog.isBulk
+            ? `Delete ${selectedImages.size} Images?`
+            : "Delete Image?"
+        }
+        description={
+          deleteConfirmDialog.isBulk
+            ? `Are you sure you want to delete ${selectedImages.size} selected images? This action cannot be undone.`
+            : `Are you sure you want to delete this image? This action cannot be undone.`
+        }
+        confirmText="Delete"
+        variant="destructive"
+        onConfirm={confirmDeleteImage}
+      />
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { LogOut } from "lucide-react";
+import { useState } from "react";
 import { ImageDialog } from "@/components/admin/image-dialog";
 import { ProjectDialog } from "@/components/admin/project-dialog";
 import { ServiceDialog } from "@/components/admin/services-dialog";
@@ -12,6 +13,7 @@ import { useAuth } from "@/providers/auth-provider";
 
 export function AdminPage() {
   const { isAuthenticated, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState("projects");
 
   const {
     data: projects,
@@ -24,7 +26,7 @@ export function AdminPage() {
         .from("projects")
         .select("*, cover_image:images(*)")
         .eq("cover_image.type", "cover");
-      return { data, error, status: 200, statusText: "OK" };
+      return { data, error };
     },
   });
 
@@ -36,7 +38,7 @@ export function AdminPage() {
   } = useSupabase({
     queryFn: async () => {
       const { data, error } = await supabase.from("services").select("*");
-      return { data, error, status: 200, statusText: "OK" };
+      return { data, error };
     },
   });
 
@@ -51,7 +53,7 @@ export function AdminPage() {
         .from("images")
         .select("*")
         .order("created_at", { ascending: false });
-      return { data, error, status: 200, statusText: "OK" };
+      return { data, error };
     },
   });
 
@@ -150,7 +152,8 @@ export function AdminPage() {
           </div>
 
           <Tabs
-            defaultValue="projects"
+            value={activeTab}
+            onValueChange={setActiveTab}
             className="space-y-6 border rounded-md p-4"
           >
             <TabsList className="grid w-full grid-cols-3">

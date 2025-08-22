@@ -1,4 +1,5 @@
 import {
+  ArrowLeft,
   ArrowUpRight,
   Calendar,
   ExternalLink,
@@ -6,10 +7,11 @@ import {
   MapPin,
   Play,
 } from "lucide-react";
-import { useParams } from "wouter";
+import { useLocation, useParams } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useSupabase } from "@/hooks/use-supabase";
+
 import supabase from "@/lib/supabase";
 
 const isVideo = (url: string): boolean => {
@@ -65,7 +67,8 @@ const MediaComponent = ({
 };
 
 export const ProjectDashboard = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
+  const [, setLocation] = useLocation();
 
   const {
     data: project,
@@ -73,16 +76,16 @@ export const ProjectDashboard = () => {
     error: projectError,
   } = useSupabase({
     queryFn: async () => {
-      if (!id) {
-        throw new Error("Project ID is required");
+      if (!slug) {
+        throw new Error("Project slug is required");
       }
       const { data, error } = await supabase
         .from("projects")
         .select("*, images(*)")
-        .eq("slug", id)
+        .eq("slug", slug)
         .single();
 
-      return { data, error, status: 200, statusText: "OK" };
+      return { data, error };
     },
   });
 
@@ -119,10 +122,18 @@ export const ProjectDashboard = () => {
 
   return (
     <main className="w-full min-h-screen bg-background">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-4 left-4 z-10 bg-background/80 backdrop-blur-sm hover:bg-background/90"
+        onClick={() => setLocation("/#portfolio")}
+      >
+        <ArrowLeft className="w-6 h-6" />
+      </Button>
       {firstImage && (
         <section className="relative w-full h-screen">
           <MediaComponent
-            url={firstImage.url}
+            url={firstImage.image_url}
             alt={`Project ${firstImage.type} content`}
             className="w-full h-full object-cover"
           />
@@ -130,7 +141,7 @@ export const ProjectDashboard = () => {
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground tracking-tight mb-2 sm:mb-4 drop-shadow-lg">
               {project.title}
             </h1>
-            {isVideo(firstImage.url) && (
+            {isVideo(firstImage.image_url) && (
               <div className="flex items-center gap-2 text-foreground/80">
                 <Play className="w-4 h-4" />
                 <span className="text-sm">Click to play video</span>
@@ -225,9 +236,9 @@ export const ProjectDashboard = () => {
               if (isFullWidth) {
                 return (
                   <div key={img.id} className="w-full">
-                    {img.url && (
+                    {img.image_url && (
                       <MediaComponent
-                        url={img.url}
+                        url={img.image_url}
                         alt={`Project ${img.type} content`}
                         className="w-full h-auto object-cover"
                       />
@@ -243,18 +254,18 @@ export const ProjectDashboard = () => {
                     className="w-full flex flex-col sm:flex-row gap-0"
                   >
                     <div className="w-full sm:w-1/2">
-                      {img.url && (
+                      {img.image_url && (
                         <MediaComponent
-                          url={img.url}
+                          url={img.image_url}
                           alt={`Project ${img.type} content`}
                           className="w-full h-auto object-cover"
                         />
                       )}
                     </div>
                     <div className="w-full sm:w-1/2">
-                      {nextImage.url && (
+                      {nextImage.image_url && (
                         <MediaComponent
-                          url={nextImage.url}
+                          url={nextImage.image_url}
                           alt={`Project ${nextImage.type} content`}
                           className="w-full h-auto object-cover"
                         />
@@ -265,9 +276,9 @@ export const ProjectDashboard = () => {
               }
               return (
                 <div key={img.id} className="w-full">
-                  {img.url && (
+                  {img.image_url && (
                     <MediaComponent
-                      url={img.url}
+                      url={img.image_url}
                       alt={`Project ${img.type} content`}
                       className="w-full h-auto object-cover"
                     />
