@@ -2,7 +2,9 @@ import * as z from "zod";
 import type { Tables } from "@/types/database.types";
 
 export type Project = Tables<"projects">;
-export type Service = Tables<"services">;
+export type Service = Tables<"services"> & {
+  images: ImageRecord[];
+};
 export type ImageRecord = Tables<"images">;
 
 export const projectSchema = z.object({

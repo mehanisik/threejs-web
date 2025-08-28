@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -10,14 +10,19 @@
     "includes": [
       "**",
       "!node_modules",
+      "!.output",
+      "!.tanstack",
+      "!.dist",
+      "!.supabase",
+      "!.supabase/migrations",
+      "!.nitro",
       "!src/components/ui",
-      "!**/dist/**",
-      "!**/public/**",
-      "!.github/**",
       "!bun.lock",
       "!**/*.md",
       "!**/*.mdx",
-      "!**/tailwind.css"
+      "!**/tailwind.css",
+      "!**/routeTree.gen.ts",
+      "!**/supabase/migrations"
     ]
   },
   "formatter": {
@@ -69,13 +74,7 @@
         "useCollapsedElseIf": "warn",
         "useExponentiationOperator": "error",
         "useConsistentBuiltinInstantiation": "error",
-        "useFilenamingConvention": {
-          "level": "warn",
-          "options": {
-            "filenameCases": ["kebab-case", "camelCase"],
-            "strictCase": false
-          }
-        },
+        "useFilenamingConvention": "off",
         "noNestedTernary": "error"
       },
       "suspicious": {
@@ -89,7 +88,8 @@
         "noPrototypeBuiltins": "warn",
         "noSelfCompare": "error",
         "noSparseArray": "error",
-        "useAwait": "off"
+        "useAwait": "off",
+        "noUnknownAtRules": "off"
       },
       "complexity": {
         "noForEach": "off",
@@ -113,7 +113,8 @@
         "noAutofocus": "warn",
         "noDistractingElements": "error",
         "noRedundantAlt": "error",
-        "useSemanticElements": "warn"
+        "useSemanticElements": "warn",
+        "noStaticElementInteractions": "off"
       },
       "nursery": {
         "useSortedClasses": "off"

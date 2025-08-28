@@ -1,14 +1,24 @@
-import { createClient } from "@supabase/supabase-js";
-import { showErrorToast } from "@/components/ui/error-toast";
-import type { Database } from "@/types/database.types";
+import { createServerClient } from "@supabase/ssr";
+import { parseCookies, setCookie } from "@tanstack/react-start/server";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-if (!(supabaseUrl && supabaseKey)) {
-  showErrorToast("Missing Supabase environment variables");
+export function getSupabaseServerClient() {
+  return createServerClient(
+    process.env.VITE_SUPABASE_URL!,
+    process.env.VITE_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return Object.entries(parseCookies()).map(([name, value]) => ({
+            name,
+            value,
+          }));
+        },
+        setAll(cookies) {
+          cookies.forEach((cookie) => {
+            setCookie(cookie.name, cookie.value);
+          });
+        },
+      },
+    },
+  );
 }
-
-const supabase = createClient<Database>(supabaseUrl, supabaseKey);
-
-export default supabase;

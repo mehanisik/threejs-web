@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { themes } from "@/constants/themes";
 import { useTheme } from "@/hooks/use-theme";
+import { AnimatePresence, motion, PRESETS, STAGGER_PRESETS } from "@/motion";
 import type { ThemeName } from "@/types/theme";
 
 interface WheelSegment {
@@ -65,167 +66,222 @@ export function ThemeSwitcher() {
   return (
     <div className="relative">
       <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end">
-        {isExpanded && (
-          <div className="mb-4 relative" id="theme-wheel">
-            <div className="relative bg-background/80 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-border/20">
-              <div className="relative flex flex-col items-center space-y-6">
-                <div className="text-center">
-                  <h2 className="text-xl font-semibold text-foreground">
-                    Switch Theme
-                  </h2>
-                </div>
-
-                <div className="relative">
-                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-3 z-20">
-                    <div className="w-0 h-0 border-l-[12px] border-r-[12px] border-b-[24px] border-l-transparent border-r-transparent border-b-primary" />
-                  </div>
-
-                  <div
-                    className="relative w-64 h-64 rounded-full border border-border/20 overflow-hidden"
-                    style={{
-                      transform: `rotate(${rotation}deg)`,
-                      transition:
-                        "transform 4s cubic-bezier(0.25, 0.1, 0.25, 1)",
-                    }}
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              className="mb-4 relative"
+              id="theme-wheel"
+              variants={PRESETS.scaleIn}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            >
+              <motion.div
+                className="relative bg-background/80 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-border/20"
+                variants={PRESETS.fadeInUp}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+              >
+                <motion.div
+                  className="relative flex flex-col items-center space-y-6"
+                  variants={STAGGER_PRESETS.container}
+                  initial="hidden"
+                  animate="visible"
+                >
+                  <motion.div
+                    className="text-center"
+                    variants={STAGGER_PRESETS.item}
                   >
-                    <svg
-                      width="256"
-                      height="256"
-                      className="w-full h-full"
-                      role="img"
-                      aria-label="Theme selection wheel"
+                    <h2 className="text-xl font-semibold text-foreground">
+                      Switch Theme
+                    </h2>
+                  </motion.div>
+
+                  <motion.div
+                    className="relative"
+                    variants={STAGGER_PRESETS.item}
+                  >
+                    <motion.div
+                      className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-3 z-20"
+                      variants={PRESETS.fadeInDown}
+                      initial="hidden"
+                      animate="visible"
+                      transition={{ delay: 0.2 }}
                     >
-                      {segments.map((segment, index) => {
-                        const startAngle = index * segmentAngle;
-                        const endAngle = (index + 1) * segmentAngle;
-                        const midAngle = (startAngle + endAngle) / 2;
+                      <div className="w-0 h-0 border-l-[12px] border-r-[12px] border-b-[24px] border-l-transparent border-r-transparent border-b-primary" />
+                    </motion.div>
 
-                        const radius = 128;
-                        const centerX = 128;
-                        const centerY = 128;
-
-                        const x1 =
-                          centerX +
-                          Math.cos(((startAngle - 90) * Math.PI) / 180) *
-                            radius;
-                        const y1 =
-                          centerY +
-                          Math.sin(((startAngle - 90) * Math.PI) / 180) *
-                            radius;
-                        const x2 =
-                          centerX +
-                          Math.cos(((endAngle - 90) * Math.PI) / 180) * radius;
-                        const y2 =
-                          centerY +
-                          Math.sin(((endAngle - 90) * Math.PI) / 180) * radius;
-
-                        const largeArcFlag = segmentAngle > 180 ? 1 : 0;
-
-                        const pathData = [
-                          `M ${centerX} ${centerY}`,
-                          `L ${x1} ${y1}`,
-                          `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
-                          "Z",
-                        ].join(" ");
-
-                        const isActive = !isSpinning && theme === segment.id;
-
-                        return (
-                          <g key={segment.id}>
-                            <path
-                              d={pathData}
-                              fill={
-                                isActive ? segment.color : `${segment.color}B3`
-                              }
-                              stroke={
-                                isActive ? segment.color : `${segment.color}33`
-                              }
-                              strokeWidth={isActive ? 2 : 1}
-                              className={`transition-all duration-300 ${!isSpinning ? "hover:opacity-90" : ""}`}
-                              style={{
-                                cursor: !isSpinning ? "pointer" : "default",
-                                pointerEvents: !isSpinning ? "auto" : "none",
-                              }}
-                              role="button"
-                              aria-label={`Select ${segment.text} theme`}
-                              onClick={() => handleSegmentClick(segment)}
-                            />
-
-                            <text
-                              x={
-                                centerX +
-                                Math.cos(((midAngle - 90) * Math.PI) / 180) *
-                                  (radius * 0.7)
-                              }
-                              y={
-                                centerY +
-                                Math.sin(((midAngle - 90) * Math.PI) / 180) *
-                                  (radius * 0.7)
-                              }
-                              textAnchor="middle"
-                              dominantBaseline="middle"
-                              fill={isActive ? "#ffffff" : "#e0e0e0"}
-                              fontSize="11"
-                              fontWeight="500"
-                              transform={`rotate(${midAngle}, ${
-                                centerX +
-                                Math.cos(((midAngle - 90) * Math.PI) / 180) *
-                                  (radius * 0.7)
-                              }, ${
-                                centerY +
-                                Math.sin(((midAngle - 90) * Math.PI) / 180) *
-                                  (radius * 0.7)
-                              })`}
-                              style={{ pointerEvents: "none" }}
-                            >
-                              {segment.text}
-                            </text>
-                          </g>
-                        );
-                      })}
-                    </svg>
-                  </div>
-
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <div className="relative w-16 h-16">
-                      <button
-                        type="button"
-                        onClick={spinWheel}
-                        disabled={isSpinning}
-                        className="relative w-16 h-16 bg-primary rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/90 transition-all duration-300 border-2 border-primary-foreground/50 shadow-md"
+                    <motion.div
+                      className="relative w-64 h-64 rounded-full border border-border/20 overflow-hidden"
+                      style={{
+                        transform: `rotate(${rotation}deg)`,
+                        transition:
+                          "transform 4s cubic-bezier(0.25, 0.1, 0.25, 1)",
+                      }}
+                      variants={PRESETS.scaleIn}
+                      whileHover={{
+                        scale: 1.02,
+                        transition: { duration: 0.3 },
+                      }}
+                    >
+                      <svg
+                        width="256"
+                        height="256"
+                        className="w-full h-full"
+                        role="img"
+                        aria-label="Theme selection wheel"
                       >
-                        {isSpinning ? (
-                          <LoaderPinwheel
-                            className="animate-spin text-primary-foreground"
-                            size={24}
-                          />
-                        ) : (
-                          <LoaderPinwheel
-                            className="text-primary-foreground ml-1"
-                            size={24}
-                          />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+                        {segments.map((segment, index) => {
+                          const startAngle = index * segmentAngle;
+                          const endAngle = (index + 1) * segmentAngle;
+                          const midAngle = (startAngle + endAngle) / 2;
 
-        <div className="relative">
-          <button
-            onClick={handleExpand}
-            type="button"
-            aria-label="Toggle theme switcher"
-            aria-expanded={isExpanded}
-            aria-controls="theme-wheel"
-            className="relative bg-primary text-primary-foreground rounded-full p-4 shadow-lg hover:scale-110 transition-all duration-300 cursor-pointer"
+                          const radius = 128;
+                          const centerX = 128;
+                          const centerY = 128;
+
+                          const x1 =
+                            centerX +
+                            Math.cos(((startAngle - 90) * Math.PI) / 180) *
+                              radius;
+                          const y1 =
+                            centerY +
+                            Math.sin(((startAngle - 90) * Math.PI) / 180) *
+                              radius;
+                          const x2 =
+                            centerX +
+                            Math.cos(((endAngle - 90) * Math.PI) / 180) *
+                              radius;
+                          const y2 =
+                            centerY +
+                            Math.sin(((endAngle - 90) * Math.PI) / 180) *
+                              radius;
+
+                          const largeArcFlag = segmentAngle > 180 ? 1 : 0;
+
+                          const pathData = [
+                            `M ${centerX} ${centerY}`,
+                            `L ${x1} ${y1}`,
+                            `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
+                            "Z",
+                          ].join(" ");
+
+                          const isActive = !isSpinning && theme === segment.id;
+
+                          return (
+                            <g key={segment.id}>
+                              <path
+                                d={pathData}
+                                fill={
+                                  isActive
+                                    ? segment.color
+                                    : `${segment.color}B3`
+                                }
+                                stroke={
+                                  isActive
+                                    ? segment.color
+                                    : `${segment.color}33`
+                                }
+                                strokeWidth={isActive ? 2 : 1}
+                                className={`transition-all duration-300 ${!isSpinning ? "hover:opacity-90" : ""}`}
+                                style={{
+                                  cursor: !isSpinning ? "pointer" : "default",
+                                  pointerEvents: !isSpinning ? "auto" : "none",
+                                }}
+                                aria-label={`Select ${segment.text} theme`}
+                                onClick={() => handleSegmentClick(segment)}
+                              />
+
+                              <text
+                                x={
+                                  centerX +
+                                  Math.cos(((midAngle - 90) * Math.PI) / 180) *
+                                    (radius * 0.7)
+                                }
+                                y={
+                                  centerY +
+                                  Math.sin(((midAngle - 90) * Math.PI) / 180) *
+                                    (radius * 0.7)
+                                }
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                                fill={isActive ? "#ffffff" : "#e0e0e0"}
+                                fontSize="11"
+                                fontWeight="500"
+                                transform={`rotate(${midAngle}, ${
+                                  centerX +
+                                  Math.cos(((midAngle - 90) * Math.PI) / 180) *
+                                    (radius * 0.7)
+                                }, ${
+                                  centerY +
+                                  Math.sin(((midAngle - 90) * Math.PI) / 180) *
+                                    (radius * 0.7)
+                                })`}
+                                style={{ pointerEvents: "none" }}
+                              >
+                                {segment.text}
+                              </text>
+                            </g>
+                          );
+                        })}
+                      </svg>
+                    </motion.div>
+
+                    <motion.div
+                      className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                      variants={STAGGER_PRESETS.item}
+                      initial="hidden"
+                      animate="visible"
+                      transition={{ delay: 0.3 }}
+                    >
+                      <div className="relative w-16 h-16">
+                        <button
+                          type="button"
+                          onClick={spinWheel}
+                          disabled={isSpinning}
+                          className="relative w-16 h-16 bg-primary rounded-full flex items-center justify-center cursor-pointer hover:bg-primary/90 transition-all duration-300 border-2 border-primary-foreground/50 shadow-md"
+                        >
+                          {isSpinning ? (
+                            <LoaderPinwheel
+                              className="animate-spin text-primary-foreground"
+                              size={24}
+                            />
+                          ) : (
+                            <LoaderPinwheel
+                              className="text-primary-foreground ml-1"
+                              size={24}
+                            />
+                          )}
+                        </button>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                </motion.div>
+              </motion.div>
+            </motion.div>
+          )}
+
+          <motion.div
+            className="relative"
+            variants={STAGGER_PRESETS.item}
+            initial="hidden"
+            animate="visible"
+            transition={{ delay: 0.1 }}
           >
-            <Palette size={24} aria-hidden="true" />
-          </button>
-        </div>
+            <button
+              onClick={handleExpand}
+              type="button"
+              aria-label="Toggle theme switcher"
+              aria-expanded={isExpanded}
+              aria-controls="theme-wheel"
+              className="relative bg-primary text-primary-foreground rounded-full p-4 shadow-lg hover:scale-110 transition-all duration-300 cursor-pointer"
+            >
+              <Palette size={24} aria-hidden="true" />
+            </button>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );

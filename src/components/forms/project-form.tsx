@@ -121,7 +121,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
                   type="number"
                   {...field}
                   onChange={(e) =>
-                    field.onChange(Number.parseInt(e.target.value))
+                    field.onChange(Number.parseInt(e.target.value, 10))
                   }
                 />
               </FormControl>

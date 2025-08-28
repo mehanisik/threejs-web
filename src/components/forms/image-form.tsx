@@ -42,9 +42,6 @@ export const ImageForm: React.FC<ImageFormProps> = ({
   <Form {...form}>
     <form
       onSubmit={(e) => {
-        console.log("Form submit event triggered");
-        console.log("Form values:", form.getValues());
-        console.log("Form errors:", form.formState.errors);
         form.handleSubmit(onSubmit)(e);
       }}
       className="space-y-4"
@@ -131,16 +128,7 @@ export const ImageForm: React.FC<ImageFormProps> = ({
         >
           Cancel
         </Button>
-        <Button
-          type="submit"
-          disabled={uploading || !hasFiles}
-          onClick={() => {
-            console.log("Upload button clicked!");
-            console.log("Button disabled?", uploading || !hasFiles);
-            console.log("Has files?", hasFiles);
-            console.log("Uploading?", uploading);
-          }}
-        >
+        <Button type="submit" disabled={uploading || !hasFiles}>
           {uploading ? "Uploading..." : "Upload Files"}
         </Button>
       </div>

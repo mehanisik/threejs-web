@@ -1,45 +1,19 @@
-import { motion } from "framer-motion";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { useLocation } from "wouter";
-import {
-  delayedTransition,
-  scaleXRevealVariants,
-  scrollRevealVariants,
-  useScrollReveal,
-} from "@/constants/animations";
-import { useSupabase } from "@/hooks/use-supabase";
-
-import supabase from "@/lib/supabase";
+import { useRef, useState } from "react";
+import { getProjects } from "@/lib/projects";
 import { ProjectModal } from "../ui/project-modal";
 
 export function ProjectsSection() {
-  const { data: projects } = useSupabase({
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("projects")
-        .select("*, images(*)")
-        .order("order_index", { ascending: true });
-      return { data, error };
-    },
+  const {
+    data: { projects },
+  } = useSuspenseQuery({
+    queryKey: ["projects"],
+    queryFn: () => getProjects(),
   });
-
-  const [activeIdx, setActiveIdx] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null!);
-  const { inViewRef, isInView } = useScrollReveal();
-  const [location, setLocation] = useLocation();
-
-  // Scroll to portfolio section when hash is present
-  useEffect(() => {
-    if (location === "/#portfolio" && containerRef.current) {
-      containerRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-      // Remove the hash from URL after scrolling
-      setLocation("/");
-    }
-  }, [location, setLocation]);
+  const [activeIdx, setActiveIdx] = useState<number | null>(null);
 
   return (
     <section
@@ -48,170 +22,101 @@ export function ProjectsSection() {
       ref={containerRef}
       style={{ position: "relative" }}
     >
-      <div ref={inViewRef} className="px-4 py-8 md:py-16">
-        <motion.div
-          variants={scrollRevealVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          transition={delayedTransition()}
-          className="flex items-baseline justify-start gap-3 md:gap-6 mb-12 md:mb-16"
-        >
-          <motion.span
-            className="text-4xl md:text-6xl lg:text-8xl font-thin text-foreground/30 font-mono"
-            variants={scrollRevealVariants}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            transition={delayedTransition(0.2)}
-          >
+      <div className="px-4 py-8 md:py-16">
+        <div className="flex items-baseline justify-start gap-3 md:gap-6 mb-12 md:mb-16">
+          <span className="text-4xl md:text-6xl lg:text-8xl font-thin text-foreground/30 font-mono">
             04
-          </motion.span>
-          <motion.h1
-            className="text-4xl md:text-6xl lg:text-8xl uppercase font-extrabold tracking-tight cursor-pointer font-mono"
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.2 }}
-          >
+          </span>
+          <h1 className="text-4xl md:text-6xl lg:text-8xl uppercase font-extrabold tracking-tight cursor-pointer font-mono">
             Featured Projects
-            {isInView && (
-              <motion.span
-                className="opacity-75"
-                animate={{ opacity: [0, 1, 0] }}
-                transition={{
-                  duration: 0.5,
-                  repeat: Number.POSITIVE_INFINITY,
-                }}
-              >
-                |
-              </motion.span>
-            )}
-          </motion.h1>
-        </motion.div>
+            <span className="opacity-75">|</span>
+          </h1>
+        </div>
 
-        <motion.div
-          className="w-24 md:w-32 lg:w-40 h-px bg-foreground/30 mb-8 md:mb-12"
-          variants={scaleXRevealVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          transition={delayedTransition(0.5)}
-        />
+        <div className="w-24 md:w-32 lg:w-40 h-px bg-foreground/30 mb-8 md:mb-12" />
 
         <div className="space-y-4 md:space-y-6">
-          {projects?.map((project, idx) => (
-            <motion.div
+          {(!projects || projects.length === 0) && (
+            <div className="text-center py-8 text-foreground/70">
+              <p>No projects found</p>
+            </div>
+          )}
+
+          {projects?.slice(0, 5).map((project, idx) => (
+            <Link
+              to="/projects/$slug"
               key={project.id}
-              variants={scrollRevealVariants}
-              initial="hidden"
-              animate={isInView ? "visible" : "hidden"}
-              transition={delayedTransition(0.3 + idx * 0.1)}
-              onMouseEnter={() => setActiveIdx(idx)}
-              onMouseLeave={() => setActiveIdx(null)}
-              onClick={() => setLocation(`/projects/${project.slug}`)}
-              className="group cursor-pointer"
-              whileHover={{
-                y: -5,
-                transition: { duration: 0.2, ease: "easeOut" },
-              }}
+              params={{ slug: project.slug ?? "" }}
             >
-              <div className="border border-foreground/15 hover:border-foreground/40 transition-all duration-300 p-6 md:p-8 bg-background">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start gap-4 md:gap-8">
-                      <motion.div
-                        className="flex-shrink-0"
-                        whileHover={{ scale: 1.1 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <span className="text-xs md:text-sm font-mono text-foreground/50 tracking-wider">
-                          {project.order_index?.toString().padStart(3, "0")}
-                        </span>
-                      </motion.div>
-
+              <div
+                className="group cursor-pointer"
+                onMouseEnter={() => setActiveIdx(idx)}
+                onMouseLeave={() => setActiveIdx(null)}
+              >
+                <div className="border border-foreground/15 hover:border-foreground/40 transition-all duration-300 p-6 md:p-8 bg-background group-hover:bg-foreground/5 group-hover:shadow-lg">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between gap-4">
                       <div className="flex-1 min-w-0">
-                        <motion.h2
-                          className="text-xl md:text-2xl lg:text-3xl font-light mb-2 group-hover:text-foreground transition-colors duration-300"
-                          whileHover={{ x: 5 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          {project.title}
-                        </motion.h2>
+                        <div className="flex items-start gap-4 md:gap-8">
+                          <div className="flex-shrink-0">
+                            <span className="text-xs md:text-sm font-mono text-foreground/50 tracking-wider group-hover:text-foreground/70 transition-colors duration-300">
+                              {project.order_index?.toString().padStart(3, "0")}
+                            </span>
+                          </div>
 
-                        <div className="flex flex-wrap items-center gap-4 md:gap-8 text-sm text-foreground/70">
-                          {project.city && (
-                            <span className="flex-shrink-0">
-                              {project.city}
-                            </span>
-                          )}
-                          {project.date && (
-                            <span className="flex-shrink-0">
-                              {project.date}
-                            </span>
-                          )}
-                          {project.tags && project.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-2">
-                              {project.tags
-                                .slice(0, 3)
-                                .map((tag: string, tagIdx: number) => (
-                                  <span
-                                    key={`${project.id}-tag-${tag}-${tagIdx}`}
-                                    className="text-xs px-2 py-1 border border-foreground/20 text-foreground/60"
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
-                              {project.tags.length > 3 && (
-                                <span className="text-xs text-foreground/50">
-                                  +{project.tags.length - 3}
-                                </span>
-                              )}
+                          <div className="flex-1 min-w-0">
+                            <h2 className="text-xl md:text-2xl lg:text-3xl font-light mb-2 group-hover:text-foreground transition-colors duration-300 group-hover:translate-x-1 transform-gpu">
+                              {project.title}
+                            </h2>
+                            <div className="flex flex-wrap items-center gap-2 md:gap-4 text-sm md:text-base text-foreground/70 group-hover:text-foreground/80 transition-colors duration-300">
+                              <span className="group-hover:translate-x-1 transform-gpu transition-transform duration-300">
+                                {project.city}
+                              </span>
+                              <span className="group-hover:translate-x-1 transform-gpu transition-transform duration-300 delay-75">
+                                {project.date}
+                              </span>
                             </div>
-                          )}
+                            {project.description && (
+                              <p className="mt-3 text-sm md:text-base text-foreground/60 leading-relaxed group-hover:text-foreground/70 transition-colors duration-300 group-hover:translate-x-1 transform-gpu delay-100">
+                                {project.description ?? ""}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex-shrink-0">
+                        <div className="w-10 h-10 md:w-12 md:h-12 border border-foreground/30 group-hover:border-foreground/60 transition-all duration-300 flex items-center justify-center group-hover:bg-foreground/10">
+                          <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 text-foreground/60 group-hover:text-foreground transition-all duration-300 group-hover:rotate-90 transform-gpu" />
                         </div>
                       </div>
                     </div>
+
+                    <div className="w-full h-px bg-foreground/10 mt-6 md:mt-8 group-hover:bg-foreground/20 transition-colors duration-300" />
                   </div>
-
-                  <motion.div
-                    className="flex-shrink-0"
-                    whileHover={{
-                      scale: 1.2,
-                      rotate: 45,
-                      transition: { duration: 0.3, ease: "easeOut" },
-                    }}
-                  >
-                    <div className="w-10 h-10 md:w-12 md:h-12 border border-foreground/30 group-hover:border-foreground/60 transition-all duration-300 flex items-center justify-center group-hover:bg-foreground/5">
-                      <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 text-foreground/60 group-hover:text-foreground transition-all duration-300" />
-                    </div>
-                  </motion.div>
                 </div>
-
-                <motion.div
-                  className="w-full h-px bg-foreground/10 mt-6 md:mt-8"
-                  initial={{ scaleX: 0 }}
-                  animate={isInView ? { scaleX: 1 } : { scaleX: 0 }}
-                  transition={{ duration: 0.6, delay: 0.8 + idx * 0.1 }}
-                  whileHover={{
-                    scaleX: 1,
-                    backgroundColor: "rgba(var(--foreground), 0.3)",
-                  }}
-                />
               </div>
-            </motion.div>
+            </Link>
           ))}
+
+          {projects && projects.length > 5 && (
+            <div className="text-center pt-8">
+              <Link
+                to="/projects"
+                className="inline-flex items-center gap-2 px-6 py-3 border border-foreground/20 hover:border-foreground/40 transition-all duration-300 text-foreground/70 hover:text-foreground group"
+              >
+                View All {projects.length} Projects
+                <ArrowUpRight className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
       <ProjectModal
-        modal={{ index: activeIdx ?? 0, active: activeIdx !== null }}
-        projects={
-          projects?.map((project) => ({
-            title: project.title,
-            subtitle: project.city ?? "",
-            href: project.external_url ?? "",
-            imgSrc:
-              project.images?.find((img) => img.type === "cover")?.image_url ||
-              "",
-          })) ?? []
-        }
-        containerRef={containerRef}
+        isActive={activeIdx !== null}
+        imageSrc={projects[activeIdx ?? 0]?.coverImage?.[0]?.image_url ?? ""}
+        altText={projects[activeIdx ?? 0]?.title ?? ""}
       />
     </section>
   );

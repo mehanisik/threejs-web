@@ -1,17 +1,12 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { useSupabase } from "@/hooks/use-supabase";
-import supabase from "@/lib/supabase";
+import { getPreviewImages } from "@/lib/images";
 
 export function PreviewSection() {
-  const { data: images } = useSupabase({
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("images")
-        .select("*")
-        .eq("type", "preview");
-      return { data, error };
-    },
+  const { data: images } = useSuspenseQuery({
+    queryKey: ["images"],
+    queryFn: () => getPreviewImages(),
   });
 
   const inViewRef = useRef<HTMLDivElement>(null);
@@ -101,18 +96,6 @@ export function PreviewSection() {
             transition={{ duration: 0.2 }}
           >
             Portfolio Gallery
-            {isInView && (
-              <motion.span
-                className="opacity-75"
-                animate={{ opacity: [0, 1, 0] }}
-                transition={{
-                  duration: 0.5,
-                  repeat: Number.POSITIVE_INFINITY,
-                }}
-              >
-                |
-              </motion.span>
-            )}
           </motion.h1>
         </motion.div>
 
@@ -162,39 +145,43 @@ export function PreviewSection() {
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
               transition={{ duration: 0.8, delay: 0.8 + columnIndex * 0.1 }}
             >
-              {column.images.map((imageSrc, imageIndex) => (
-                <motion.div
-                  key={`${columnIndex}-${imageIndex.toString()}`}
-                  className="relative w-full h-full overflow-hidden group cursor-pointer"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={
-                    isInView
-                      ? { opacity: 1, scale: 1 }
-                      : { opacity: 0, scale: 0.95 }
-                  }
-                >
-                  <div className="w-full h-full border border-foreground/10 group-hover:border-foreground/20 transition-colors duration-300 overflow-hidden">
-                    <img
-                      src={imageSrc.image_url}
-                      alt={`Gallery artwork ${columnIndex + 1}-${imageIndex + 1}`}
-                      className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110 group-hover:contrast-105"
-                      loading="lazy"
+              {column.images.map(
+                (imageSrc: { image_url: string }, imageIndex: number) => (
+                  <motion.div
+                    key={`${columnIndex}-${imageIndex.toString()}`}
+                    className="relative w-full h-full overflow-hidden group cursor-pointer"
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={
+                      isInView
+                        ? { opacity: 1, scale: 1 }
+                        : { opacity: 0, scale: 0.95 }
+                    }
+                  >
+                    <div className="w-full h-full border border-foreground/10 group-hover:border-foreground/20 transition-colors duration-300 overflow-hidden">
+                      <img
+                        src={imageSrc.image_url}
+                        alt={`Gallery artwork ${columnIndex + 1}-${imageIndex + 1}`}
+                        className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110 group-hover:contrast-105"
+                        loading="lazy"
+                        decoding="async"
+                        fetchPriority="high"
+                      />
+                    </div>
+
+                    <motion.div
+                      className="absolute inset-0 bg-foreground/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      whileHover={{ opacity: 1 }}
                     />
-                  </div>
 
-                  <motion.div
-                    className="absolute inset-0 bg-foreground/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    whileHover={{ opacity: 1 }}
-                  />
-
-                  <motion.div
-                    className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-foreground/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    whileHover={{ scale: 1.2 }}
-                  />
-                </motion.div>
-              ))}
+                    <motion.div
+                      className="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-foreground/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      whileHover={{ scale: 1.2 }}
+                    />
+                  </motion.div>
+                ),
+              )}
             </motion.div>
           ))}
         </div>

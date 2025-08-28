@@ -1,24 +1,28 @@
 {
+  "include": ["**/*.ts", "**/*.tsx"],
   "compilerOptions": {
-    "incremental": true,
-    "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
-    "noEmit": true,
+    "target": "ES2022",
+    "jsx": "react-jsx",
     "module": "ESNext",
-    "strict": true,
-    "lib": ["esnext", "dom", "dom.iterable"],
-    "jsx": "preserve",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "allowImportingTsExtensions": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
+
+    /* Bundler mode */
     "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": false,
+    "noEmit": true,
+
+    /* Linting */
+    "skipLibCheck": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
     "baseUrl": ".",
-    "types": ["node", "vite/client"],
     "paths": {
       "@/*": ["./src/*"]
-    },
-
-    "typeRoots": ["./node_modules/@types", "./src/types"]
-  },
-  "include": ["**/*.ts", "**/*.tsx", "src/types/**/*.d.ts"],
-  "exclude": ["node_modules"]
+    }
+  }
 }

@@ -11,6 +11,15 @@ node_modules
 dist
 dist-ssr
 *.local
+.env.local
+.env.*.local
+*.tsbuildinfo
+coverage
+.turbo
+.vercel
+.cache
+.vite
+bun.lockb
 
 # Editor directories and files
 .vscode/*
@@ -26,3 +35,7 @@ dist-ssr
 .sonda
 stats.html
 .env
+.output
+.tanstack
+.dist
+.nitro

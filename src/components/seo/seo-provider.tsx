@@ -10,5 +10,3 @@ interface SEOProviderProps {
 export const SEOProvider = ({ children, helmetContext }: SEOProviderProps) => {
   return <HelmetProvider context={helmetContext}>{children}</HelmetProvider>;
 };
-
-export default SEOProvider;

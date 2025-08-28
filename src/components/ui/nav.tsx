@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { motion, type Variants } from "motion/react";
 
 interface NavProps {
@@ -52,13 +53,6 @@ const slideIn: Variants = {
 };
 
 export const Nav: React.FC<NavProps> = ({ active, links, footerLinks }) => {
-  const handleSectionScroll = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   if (!active) return null;
   return (
     <div
@@ -81,13 +75,24 @@ export const Nav: React.FC<NavProps> = ({ active, links, footerLinks }) => {
                 animate="enter"
                 exit="exit"
               >
-                <button
-                  type="button"
-                  onClick={() => handleSectionScroll(href)}
-                  className="no-underline text-background text-5xl hover:text-yellow-500 transition-colors duration-300 bg-transparent border-none cursor-pointer p-0"
-                >
-                  {title}
-                </button>
+                {href.startsWith("/") ? (
+                  <Link
+                    to={href}
+                    className="no-underline text-background text-5xl hover:text-yellow-500 transition-colors duration-300"
+                    aria-label={`Go to ${title}`}
+                  >
+                    {title}
+                  </Link>
+                ) : (
+                  <Link
+                    to="/"
+                    hash={href}
+                    className="no-underline text-background text-5xl hover:text-yellow-500 transition-colors duration-300"
+                    aria-label={`Go to ${title} section`}
+                  >
+                    {title}
+                  </Link>
+                )}
               </motion.div>
             </div>
           );

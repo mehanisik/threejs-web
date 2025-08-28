@@ -1,150 +1,113 @@
-import { motion, type Variants } from "framer-motion";
-import { useMotionValue, useSpring } from "motion/react";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect } from "react";
+import { AnimatePresence, motion, useMotionValue, useSpring } from "@/motion";
 
 interface ModalProps {
-  modal: { active: boolean; index: number };
-  projects: {
-    title: string;
-    subtitle: string;
-    href: string;
-    imgSrc: string;
-  }[];
-  containerRef: React.RefObject<HTMLDivElement>;
+  isActive: boolean;
+  imageSrc: string;
+  altText: string;
 }
 
-export const ProjectModal = ({ modal, projects, containerRef }: ModalProps) => {
-  const { index, active } = modal;
-  const modalRef = useRef(null);
-  const cursorRef = useRef(null);
-  const cursorLabelRef = useRef(null);
-
+export const ProjectModal = ({ isActive, imageSrc, altText }: ModalProps) => {
   const mouse = {
     x: useMotionValue(0),
     y: useMotionValue(0),
   };
 
-  const cursor = {
-    _x: useMotionValue(0),
-    _y: useMotionValue(0),
-  };
-
-  const mouseMove = (e: any) => {
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      const styles = getComputedStyle(containerRef.current);
-      const paddingLeft = Number.parseFloat(styles.paddingLeft) || 0;
-      const paddingTop = Number.parseFloat(styles.paddingTop) || 0;
-      const borderLeftWidth = Number.parseFloat(styles.borderLeftWidth) || 0;
-      const borderTopWidth = Number.parseFloat(styles.borderTopWidth) || 0;
-      const x = e.clientX - rect.left - paddingLeft - borderLeftWidth;
-      const y = e.clientY - rect.top - paddingTop - borderTopWidth;
-      mouse.x.set(x);
-      mouse.y.set(y);
-    }
-  };
-
-  const cursorMove = (e: any) => {
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      const styles = getComputedStyle(containerRef.current);
-      const paddingLeft = Number.parseFloat(styles.paddingLeft) || 0;
-      const paddingTop = Number.parseFloat(styles.paddingTop) || 0;
-      const borderLeftWidth = Number.parseFloat(styles.borderLeftWidth) || 0;
-      const borderTopWidth = Number.parseFloat(styles.borderTopWidth) || 0;
-      const x = e.clientX - rect.left - paddingLeft - borderLeftWidth;
-      const y = e.clientY - rect.top - paddingTop - borderTopWidth;
-      cursor._x.set(x);
-      cursor._y.set(y);
-    }
-  };
-
-  const smoothOptions = {
+  const springConfig = {
     damping: 40,
     stiffness: 300,
     mass: 0.5,
   };
 
-  const cursorMoveSmoothOptions = {
-    damping: 20,
-    stiffness: 300,
-    mass: 0.5,
-  };
+  const mouseMove = useCallback(
+    (e: MouseEvent) => {
+      const offsetX = 20;
+      const offsetY = -20;
+      const modalWidth = 320;
+      const modalHeight = 240;
+
+      let x = e.clientX + offsetX;
+      let y = e.clientY + offsetY;
+
+      if (x + modalWidth > window.innerWidth) {
+        x = e.clientX - modalWidth - offsetX;
+      }
+      if (y + modalHeight > window.innerHeight) {
+        y = e.clientY - modalHeight - offsetY;
+      }
+
+      mouse.x.set(x);
+      mouse.y.set(y);
+    },
+    [mouse.x, mouse.y],
+  );
 
   const smoothMouse = {
-    x: useSpring(mouse.x, smoothOptions),
-    y: useSpring(mouse.y, smoothOptions),
-  };
-
-  const smoothCursor = {
-    _x: useSpring(cursor._x, cursorMoveSmoothOptions),
-    _y: useSpring(cursor._y, cursorMoveSmoothOptions),
+    x: useSpring(mouse.x, springConfig),
+    y: useSpring(mouse.y, springConfig),
   };
 
   useEffect(() => {
     window.addEventListener("mousemove", mouseMove);
-    window.addEventListener("mousemove", cursorMove);
 
     return () => {
       window.removeEventListener("mousemove", mouseMove);
-      window.removeEventListener("mousemove", cursorMove);
     };
-  }, []);
-
-  const scaleAnimation: Variants = {
-    initial: {
-      scale: 0,
-      x: "-50%",
-      y: "-50%",
-    },
-    open: {
-      scale: 1,
-      x: "-50%",
-      y: "-50%",
-      transition: {
-        duration: 0.4,
-        ease: [0.76, 0, 0.24, 1],
-      },
-    },
-    closed: {
-      scale: 0,
-      x: "-50%",
-      y: "-50%",
-      transition: {
-        duration: 0.4,
-        ease: [0.32, 0, 0.67, 0],
-      },
-    },
-  };
-
-  // Get the current project based on index
-  const currentProject = projects[index] || projects[0];
+  }, [mouseMove]);
 
   return (
-    <motion.div
-      variants={scaleAnimation}
-      initial={"initial"}
-      animate={active ? "open" : "closed"}
-      ref={modalRef}
-      className="h-[350px] w-[400px] hidden md:flex items-center justify-center absolute overflow-hidden pointer-events-none"
-      style={{
-        left: smoothMouse.x,
-        top: smoothMouse.y,
-      }}
-    >
-      <div className="h-full w-full flex items-center justify-center p-1 rounded-lg">
-        {currentProject && (
-          <img
-            src={currentProject.imgSrc}
-            alt={currentProject.title}
-            className="h-auto max-h-full max-w-full object-cover rounded-lg"
-            onError={(e) => {
-              // Hide image if it fails to load
-              e.currentTarget.style.display = "none";
+    <AnimatePresence>
+      {isActive && (
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.8, opacity: 0 }}
+          transition={{
+            duration: 0.3,
+            ease: [0.25, 0.46, 0.45, 0.94],
+            type: "spring",
+            damping: 25,
+            stiffness: 300,
+          }}
+          className="fixed pointer-events-none z-50"
+          style={{
+            left: smoothMouse.x,
+            top: smoothMouse.y,
+          }}
+        >
+          <motion.div
+            className="relative bg-background border-2 border-foreground/40 rounded-xl overflow-hidden shadow-2xl w-80 h-60"
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.2 }}
+            style={{
+              boxShadow:
+                "0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.2)",
+              transform: "translate(-50%, -50%)",
             }}
-          />
-        )}
-      </div>
-    </motion.div>
+          >
+            <div className="relative w-full h-full">
+              {imageSrc ? (
+                <motion.img
+                  src={imageSrc || "https://placehold.co/320x240"}
+                  alt={altText}
+                  className="w-full h-full object-cover"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.4 }}
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full bg-foreground/10 flex items-center justify-center">
+                  <span className="text-foreground/50 text-sm">
+                    {imageSrc ? "No image" : "Loading..."}
+                  </span>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
