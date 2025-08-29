@@ -4,14 +4,12 @@ import type { ReactNode } from "react";
 interface SpringTransitionProps {
   children: ReactNode;
   isActive: boolean;
-  duration?: number;
   delay?: number;
 }
 
 const SpringTransition = ({
   children,
   isActive,
-  duration = 0.4,
   delay = 0,
 }: SpringTransitionProps) => {
   return (

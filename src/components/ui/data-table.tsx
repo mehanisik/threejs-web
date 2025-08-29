@@ -3,14 +3,14 @@ import {
   type ColumnFiltersState,
   flexRender,
   getCoreRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   type RowSelectionState,
   type SortingState,
   useReactTable,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
 } from "@tanstack/react-table";
 import { ArrowUpDown, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -48,7 +48,8 @@ interface DataTableProps<TData, TValue> {
   pageSizeOptions?: number[];
 }
 
-function exportRowsToCsv<TData>(rows: any[], filename = "export.csv") {
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+function exportRowsToCsv(rows: any[], filename = "export.csv") {
   if (!rows.length) return;
   const headers = Object.keys(rows[0]);
   const csv = [headers.join(",")]
