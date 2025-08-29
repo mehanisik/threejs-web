@@ -9,12 +9,11 @@ import {
 import { fetchUserFn, signOutFn } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin")({
-  beforeLoad: async ({ location }) => {
+  beforeLoad: async () => {
     const { user } = await fetchUserFn();
     if (!user) {
       throw redirect({
         to: "/auth/sign-in",
-        search: { redirect: location.href },
       });
     }
     return { user };
@@ -29,7 +28,7 @@ function AdminLayout() {
   const path = state.location.pathname;
 
   return (
-    <div className="min-h-dvh w-full">
+    <div className="min-h-dvh w-full bg-background text-foreground">
       <header className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur">
         <div className="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-6">
@@ -37,19 +36,19 @@ function AdminLayout() {
             <nav className="hidden md:flex items-center gap-2 text-sm">
               <Link
                 to="/admin"
-                className={`px-2 py-1 rounded ${path === "/admin" ? "bg-muted" : "hover:bg-muted"}`}
+                className={`px-2 py-1 rounded ${path === "/admin" ? "bg-muted" : "text-muted-foreground hover:bg-muted"}`}
               >
                 Dashboard
               </Link>
               <Link
                 to="/admin/projects"
-                className={`px-2 py-1 rounded ${path.startsWith("/admin/projects") ? "bg-muted" : "hover:bg-muted"}`}
+                className={`px-2 py-1 rounded ${path.startsWith("/admin/projects") ? "bg-muted" : "text-muted-foreground hover:bg-muted"}`}
               >
                 Projects
               </Link>
               <Link
                 to="/admin/images"
-                className={`px-2 py-1 rounded ${path.startsWith("/admin/images") ? "bg-muted" : "hover:bg-muted"}`}
+                className={`px-2 py-1 rounded ${path.startsWith("/admin/images") ? "bg-muted" : "text-muted-foreground hover:bg-muted"}`}
               >
                 Images
               </Link>

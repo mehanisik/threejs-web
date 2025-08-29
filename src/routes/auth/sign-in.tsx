@@ -1,6 +1,5 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { SignInForm } from "@/components/forms/sign-in-form";
-import { PageWrapper } from "@/components/ui/page-wrapper";
 import { fetchUserFn } from "@/lib/auth";
 
 export const Route = createFileRoute("/auth/sign-in")({
@@ -15,9 +14,5 @@ export const Route = createFileRoute("/auth/sign-in")({
 });
 
 function SignInPage() {
-  return (
-    <PageWrapper>
-      <SignInForm />
-    </PageWrapper>
-  );
+  return <SignInForm />;
 }

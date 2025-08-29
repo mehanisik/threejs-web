@@ -23,13 +23,14 @@ function RouteComponent() {
     <PageWrapper>
       <div className="w-full p-8">
         <div className="text-left mb-16 pt-20">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4"
-          >
-            <span aria-hidden>{"\u2190"}</span>
-            Back
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/"
+              className="text-sm text-muted-foreground hover:text-foreground mb-4"
+            >
+              Back
+            </Link>
+          </div>
           <h1 className="text-4xl uppercase md:text-5xl font-bold tracking-tight mb-4">
             My Projects
           </h1>

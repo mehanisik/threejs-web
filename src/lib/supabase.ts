@@ -3,8 +3,8 @@ import { parseCookies, setCookie } from "@tanstack/react-start/server";
 
 export function getSupabaseServerClient() {
   return createServerClient(
-    process.env.VITE_SUPABASE_URL!,
-    process.env.VITE_SUPABASE_ANON_KEY!,
+    import.meta.env.VITE_SUPABASE_URL!,
+    import.meta.env.VITE_SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll() {

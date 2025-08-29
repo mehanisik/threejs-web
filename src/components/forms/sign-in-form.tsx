@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useZodForm } from "@/hooks/use-zod-form";
 import { signInFn } from "@/lib/auth";
+import { PageWrapper } from "../ui/page-wrapper";
 
 const signInSchema = z.object({
   email: z.string().email(),
@@ -52,12 +53,7 @@ export function SignInForm() {
   }
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-background via-background to-background text-foreground">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-24 -left-24 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-secondary/10 blur-3xl" />
-      </div>
-
+    <PageWrapper>
       <div className="relative mx-auto flex min-h-screen max-w-lg items-center justify-center p-6">
         <div className="w-full rounded-xl border border-foreground/10 bg-background/60 p-6 shadow-xl backdrop-blur supports-[backdrop-filter]:bg-background/40">
           <div className="mb-6 text-center">
@@ -178,6 +174,6 @@ export function SignInForm() {
           </form>
         </div>
       </div>
-    </div>
+    </PageWrapper>
   );
 }
