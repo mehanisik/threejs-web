@@ -7,8 +7,18 @@ import { ProjectsSection } from "@/components/landing/projects-section";
 import { ServicesSection } from "@/components/landing/services-section";
 import { Navbar } from "@/components/layout/navbar";
 import { PageWrapper } from "@/components/ui/page-wrapper";
+import { siteConfig } from "@/constants/site-config";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: seo({
+      title: siteConfig.title,
+      description: siteConfig.description,
+      keywords: siteConfig.keywords,
+      image: siteConfig.seo.defaultImage,
+    }),
+  }),
   component: Index,
 });
 

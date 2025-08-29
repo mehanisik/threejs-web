@@ -4,9 +4,18 @@ import { Badge } from "@/components/ui/badge";
 import { PageWrapper } from "@/components/ui/page-wrapper";
 import { siteConfig } from "@/constants/site-config";
 import { getPotraitImage } from "@/lib/images";
+import { seo } from "@/lib/seo";
 import { motion, PRESETS, STAGGER_PRESETS } from "@/motion";
 
 export const Route = createFileRoute("/about")({
+  head: () => ({
+    meta: seo({
+      title: `About - ${siteConfig.name}`,
+      description: siteConfig.about.description,
+      keywords: siteConfig.keywords,
+      image: siteConfig.seo.defaultImage,
+    }),
+  }),
   component: About,
 });
 

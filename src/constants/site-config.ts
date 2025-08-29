@@ -1,5 +1,4 @@
 export const siteConfig = {
-  // Site Information
   name: "Muhammed Hasturk",
   title: "Muhammed Hasturk - Graphic Designer & UX/UI Specialist",
   description:
@@ -9,7 +8,6 @@ export const siteConfig = {
   author: "Muhammed Hasturk",
   url: "https://muhammedhasturk.com",
 
-  // Social Links
   social: {
     instagram: "https://instagram.com/muhammedhasturk",
     email: "mailto:muhammedmustafahasturk@gmail.com",
@@ -17,7 +15,6 @@ export const siteConfig = {
     dribbble: "https://dribbble.com/mamihasturk",
   },
 
-  // Navigation
   navigation: {
     home: "Home",
     about: "About",
@@ -26,7 +23,6 @@ export const siteConfig = {
     contact: "Contact",
   },
 
-  // Hero Section
   hero: {
     title: "Creative Designer & UX/UI Specialist",
     subtitle:
@@ -37,7 +33,6 @@ export const siteConfig = {
     ctaSecondary: "Get In Touch",
   },
 
-  // About Section
   about: {
     title: "About Me",
     subtitle: "Passionate about design and user experience",
@@ -60,7 +55,6 @@ export const siteConfig = {
     clients: "30+ satisfied",
   },
 
-  // Services Section
   services: {
     title: "Services I Offer",
     subtitle: "Comprehensive design solutions for your brand",
@@ -104,7 +98,6 @@ export const siteConfig = {
     ],
   },
 
-  // Projects Section
   projects: {
     title: "Featured Projects",
     subtitle: "A selection of my recent work",
@@ -121,7 +114,6 @@ export const siteConfig = {
     ],
   },
 
-  // Contact Section
   contact: {
     title: "Let's Work Together",
     subtitle: "Ready to bring your vision to life?",
@@ -133,7 +125,6 @@ export const siteConfig = {
     responseTime: "Usually responds within 24 hours",
   },
 
-  // Footer
   footer: {
     description:
       "Creating meaningful design experiences that connect brands with their audiences.",
@@ -146,7 +137,6 @@ export const siteConfig = {
     },
   },
 
-  // SEO Defaults
   seo: {
     defaultTitle: "Muhammed Hasturk - Graphic Designer & UX/UI Specialist",
     defaultDescription:
@@ -157,7 +147,6 @@ export const siteConfig = {
     twitterHandle: "@muhammedhasturk",
   },
 
-  // Performance
   performance: {
     preloadFonts: [
       "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",

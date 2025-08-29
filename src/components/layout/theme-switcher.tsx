@@ -1,5 +1,5 @@
 import { LoaderPinwheel, Palette } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { themes } from "@/constants/themes";
 import { useTheme } from "@/hooks/use-theme";
@@ -25,6 +25,26 @@ export function ThemeSwitcher() {
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [rotation, setRotation] = useState<number>(0);
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const themeSwitcherRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        themeSwitcherRef.current &&
+        !themeSwitcherRef.current.contains(event.target as Node)
+      ) {
+        setIsExpanded(false);
+      }
+    };
+
+    if (isExpanded) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isExpanded]);
 
   const spinWheel = () => {
     if (isSpinning || segments.length === 0) return;
@@ -45,7 +65,9 @@ export function ThemeSwitcher() {
 
       const winnerSegment = segments[winnerIndex];
       setTheme(winnerSegment.id);
-      toast.success(`Theme set to ${winnerSegment.text}`);
+      toast.success(`Theme set to ${winnerSegment.text}`, {
+        description: "You can change it automatically by clicking the wheel",
+      });
 
       setIsSpinning(false);
     }, 4000);
@@ -64,7 +86,7 @@ export function ThemeSwitcher() {
   const segmentAngle = 360 / segments.length;
 
   return (
-    <div className="relative">
+    <div className="relative" ref={themeSwitcherRef}>
       <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end">
         <AnimatePresence>
           {isExpanded && (
@@ -114,17 +136,13 @@ export function ThemeSwitcher() {
                     </motion.div>
 
                     <motion.div
-                      className="relative w-64 h-64 rounded-full border border-border/20 overflow-hidden"
-                      style={{
-                        transform: `rotate(${rotation}deg)`,
-                        transition:
-                          "transform 4s cubic-bezier(0.25, 0.1, 0.25, 1)",
+                      className="relative w-64 h-64 rounded-full border-2 border-border/40 overflow-hidden bg-background/20"
+                      animate={{ rotate: rotation }}
+                      transition={{
+                        duration: 4,
+                        ease: [0.25, 0.1, 0.25, 1],
                       }}
                       variants={PRESETS.scaleIn}
-                      whileHover={{
-                        scale: 1.02,
-                        transition: { duration: 0.3 },
-                      }}
                     >
                       <svg
                         width="256"
@@ -179,12 +197,8 @@ export function ThemeSwitcher() {
                                     ? segment.color
                                     : `${segment.color}B3`
                                 }
-                                stroke={
-                                  isActive
-                                    ? segment.color
-                                    : `${segment.color}33`
-                                }
-                                strokeWidth={isActive ? 2 : 1}
+                                stroke="#9ca3af"
+                                strokeWidth={1.5}
                                 className={`transition-all duration-300 ${!isSpinning ? "hover:opacity-90" : ""}`}
                                 style={{
                                   cursor: !isSpinning ? "pointer" : "default",

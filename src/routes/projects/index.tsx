@@ -3,7 +3,9 @@ import { FooterSection } from "@/components/landing/footer-section";
 import { NotFound } from "@/components/ui/not-found";
 import { PageWrapper } from "@/components/ui/page-wrapper";
 import { Skeleton } from "@/components/ui/skeleton";
+import { siteConfig } from "@/constants/site-config";
 import { getProjects } from "@/lib/projects";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/projects/")({
   loader: async () => {
@@ -12,6 +14,14 @@ export const Route = createFileRoute("/projects/")({
       projects,
     };
   },
+  head: () => ({
+    meta: seo({
+      title: `Projects - ${siteConfig.name}`,
+      description: siteConfig.projects.description,
+      keywords: siteConfig.keywords,
+      image: siteConfig.seo.defaultImage,
+    }),
+  }),
   pendingComponent: ProjectsPending,
   component: RouteComponent,
 });

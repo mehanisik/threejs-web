@@ -4,6 +4,8 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { siteConfig } from "@/constants/site-config";
+import { seo } from "@/lib/seo";
 import { Providers } from "@/providers";
 import appCss from "../styles.css?url";
 
@@ -21,9 +23,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         name: "viewport",
         content: "width=device-width, initial-scale=1",
       },
-      {
-        title: "TanStack Start Starter",
-      },
+      ...seo({
+        title: siteConfig.seo.defaultTitle,
+        description: siteConfig.seo.defaultDescription,
+        keywords: siteConfig.seo.defaultKeywords,
+        image: siteConfig.seo.defaultImage,
+      }),
     ],
     links: [
       {

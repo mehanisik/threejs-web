@@ -2,12 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
+import { siteConfig } from "@/constants/site-config";
+import { getGalleryGridClass, getGalleryItemLayout } from "@/lib/gallery";
 import { getProjectBySlug, getProjects } from "@/lib/projects";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/projects/$slug")({
   loader: async ({ params: { slug } }) => {
     const project = await getProjectBySlug({ data: slug });
-    // Get ordered projects with cover images to compute next + preview
     const { projects } = await getProjects();
     const idx = projects.findIndex((p) => p.slug === slug);
     const next = idx >= 0 ? projects[(idx + 1) % projects.length] : undefined;
@@ -20,6 +22,21 @@ export const Route = createFileRoute("/projects/$slug")({
       nextCover,
     };
   },
+  head: ({ loaderData }) => {
+    const project = loaderData?.project as
+      | import("@/lib/projects").ProjectWithImages
+      | null;
+    const cover = project?.images?.find((i) => i.type === "cover");
+    const img = cover?.image_url as string | undefined;
+    return {
+      meta: seo({
+        title: `${project?.title || "Project"} - ${siteConfig.name}`,
+        description: project?.description || siteConfig.projects.description,
+        keywords: siteConfig.keywords,
+        image: img || siteConfig.seo.defaultImage,
+      }),
+    };
+  },
   pendingComponent: ProjectPending,
   component: ProjectDetailPage,
 });
@@ -30,59 +47,39 @@ function ProjectDetailPage() {
   const { slug } = Route.useParams();
   const { project, nextSlug, nextTitle, nextCover } = Route.useLoaderData();
 
-  // Scroll to top when slug changes
   useEffect(() => {
-    // Reset both Lenis and window scroll to ensure it works
     const resetScroll = () => {
-      // Reset window scroll
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
 
-      // Also try to reset Lenis if available
-      if (typeof window !== "undefined" && (window as any).lenis) {
-        (window as any).lenis.scrollTo(0, { immediate: true });
+      if (typeof window !== "undefined") {
+        const windowWithLenis = window as typeof window & {
+          lenis?: {
+            scrollTo: (value: number, options: { immediate: boolean }) => void;
+          };
+        };
+        if (windowWithLenis.lenis) {
+          windowWithLenis.lenis.scrollTo(0, { immediate: true });
+        }
       }
     };
 
-    // Immediate reset
     resetScroll();
 
-    // Also reset after a small delay to handle any async rendering
     const timeoutId = setTimeout(resetScroll, 100);
 
     return () => clearTimeout(timeoutId);
-  }, [slug]);
+  }, []);
 
   const projectImages = project?.images || [];
   const coverImage = projectImages.find((image) => image.type === "cover");
 
-  const gridColsClass = (() => {
-    const len = projectImages.length;
-    if (len === 1) return "grid-cols-1 max-w-5xl mx-auto";
-    if (len === 2) return "grid-cols-1 sm:grid-cols-2";
-    if (len === 3) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
-    if (len === 4) return "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4";
-    if (len <= 6) return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
-    return "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4";
-  })();
+  const gridColsClass = getGalleryGridClass(projectImages.length);
 
-  const computeSpanClass = (index: number, len: number) => {
-    if (len === 4 && index === 0) return "sm:col-span-2 xl:col-span-2";
-    if (len === 5 && index === 0) return "sm:col-span-2 lg:col-span-2";
-    if (len === 6 && (index === 0 || index === 1))
-      return "sm:col-span-1 lg:col-span-1";
-    if (len >= 7 && index === 0)
-      return "sm:col-span-2 md:col-span-2 lg:col-span-2";
-    if (len >= 9 && index === 1) return "md:col-span-1 lg:col-span-2";
-    return "";
-  };
+  const computeSpanClass = (index: number, len: number) =>
+    getGalleryItemLayout(index, len).spanClass;
 
-  const computeAspectRatio = (index: number, len: number) => {
-    if (len === 1) return "16/10";
-    if (len === 2) return "4/3";
-    if (len >= 7 && index === 0) return "16/10";
-    if (len >= 9 && index === 1) return "16/10";
-    return "4/3";
-  };
+  const computeAspectRatio = (index: number, len: number) =>
+    getGalleryItemLayout(index, len).aspectRatio;
 
   return (
     <motion.div

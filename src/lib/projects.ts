@@ -8,9 +8,9 @@ export type ProjectWithCoverImage = Tables<"projects"> & {
 
 export const getProjects = createServerFn({ method: "GET" }).handler(
   async () => {
-    const supabase = getSupabaseServerClient();
-
     try {
+      const supabase = getSupabaseServerClient();
+
       const { data, error } = await supabase
         .from("projects")
         .select(`
@@ -20,11 +20,18 @@ export const getProjects = createServerFn({ method: "GET" }).handler(
         .eq("coverImage.type", "cover")
         .order("order_index", { ascending: true });
 
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.error("Supabase error:", error);
+        throw new Error(`Database error: ${error.message}`);
+      }
 
       return { projects: data as ProjectWithCoverImage[] };
     } catch (error) {
-      throw new Error(error as string);
+      console.error("Projects fetch error:", error);
+      if (error instanceof Error) {
+        throw new Error(`Failed to fetch projects: ${error.message}`);
+      }
+      throw new Error("Failed to fetch projects: Unknown error");
     }
   },
 );
@@ -38,9 +45,9 @@ export const getProjectBySlug = createServerFn({ method: "GET" })
     return slug;
   })
   .handler(async ({ data: slug }) => {
-    const supabase = getSupabaseServerClient();
-
     try {
+      const supabase = getSupabaseServerClient();
+
       const { data, error } = await supabase
         .from("projects")
         .select(`
@@ -50,11 +57,18 @@ export const getProjectBySlug = createServerFn({ method: "GET" })
         .eq("slug", slug)
         .maybeSingle();
 
-      if (error) throw new Error(error.message);
+      if (error) {
+        console.error("Supabase error:", error);
+        throw new Error(`Database error: ${error.message}`);
+      }
 
       return data as ProjectWithImages | null;
     } catch (error) {
-      throw new Error(error as string);
+      console.error("Project fetch error:", error);
+      if (error instanceof Error) {
+        throw new Error(`Failed to fetch project: ${error.message}`);
+      }
+      throw new Error("Failed to fetch project: Unknown error");
     }
   });
 

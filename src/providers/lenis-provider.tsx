@@ -9,6 +9,7 @@ export interface LenisProviderProps {
 
 export const LenisProvider = ({ children }: LenisProviderProps) => {
   const lenisRef = useRef<LenisRef>(null);
+  const prevLocationRef = useRef<string>("");
   const locationKey = useRouterState({
     select: (s) =>
       `${s.location.pathname}${s.location.search}${s.location.hash}`,
@@ -27,14 +28,19 @@ export const LenisProvider = ({ children }: LenisProviderProps) => {
 
   // Reset scroll position on route changes
   useEffect(() => {
-    const lenis = lenisRef.current?.lenis;
-    if (lenis) {
-      // Reset Lenis scroll position
-      lenis.scrollTo(0, { immediate: true });
-    }
-    // Also reset window scroll as fallback
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    const currentLocation = locationKey;
+    if (currentLocation !== prevLocationRef.current) {
+      prevLocationRef.current = currentLocation;
+
+      const lenis = lenisRef.current?.lenis;
+      if (lenis) {
+        // Reset Lenis scroll position
+        lenis.scrollTo(0, { immediate: true });
+      }
+      // Also reset window scroll as fallback
+      if (typeof window !== "undefined") {
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+      }
     }
   }, [locationKey]);
 
