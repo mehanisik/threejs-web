@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useScroll, useTransform } from "framer-motion";
 import { X } from "lucide-react";
+import { useScroll, useTransform } from "motion/react";
 import { useRef, useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { getServices } from "@/lib/services";

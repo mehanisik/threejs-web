@@ -1,9 +1,9 @@
-import type { Transition } from "framer-motion";
+import type { Transition } from "motion/react";
 
 export const MOTION_CONFIG = {
   default: {
     duration: 0.3,
-    ease: [0.4, 0, 0.2, 1], // Custom cubic-bezier
+    ease: [0.4, 0, 0.2, 1],
   },
 
   fast: {
@@ -201,4 +201,4 @@ export type PageTransitions = typeof PAGE_TRANSITIONS;
 export type {
   Transition as FramerTransition,
   Variants as FramerVariants,
-} from "framer-motion";
+} from "motion/react";

@@ -1,5 +1,5 @@
-import { motion } from "framer-motion";
 import { AlertCircle, RefreshCw } from "lucide-react";
+import { motion } from "motion/react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";

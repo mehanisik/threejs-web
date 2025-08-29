@@ -1,6 +1,6 @@
 import { useRouterState } from "@tanstack/react-router";
-import { cancelFrame, frame } from "framer-motion";
 import { type LenisRef, ReactLenis } from "lenis/react";
+import { cancelFrame, frame } from "motion/react";
 import { type ReactNode, useEffect, useRef } from "react";
 
 export interface LenisProviderProps {

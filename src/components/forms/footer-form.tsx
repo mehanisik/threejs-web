@@ -1,5 +1,5 @@
 import { useForm } from "@formspree/react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { useWatch } from "react-hook-form";
 import { z } from "zod";

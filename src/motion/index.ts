@@ -14,7 +14,7 @@ export type {
   Target,
   Transition,
   Variants,
-} from "framer-motion";
+} from "motion/react";
 export {
   AnimatePresence,
   motion,
@@ -25,7 +25,7 @@ export {
   useReducedMotion,
   useSpring,
   useTransform,
-} from "framer-motion";
+} from "motion/react";
 export * from "./config";
 export * from "./hooks";
 export * from "./presets";

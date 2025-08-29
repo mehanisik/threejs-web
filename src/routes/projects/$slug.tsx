@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
+import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { siteConfig } from "@/constants/site-config";
 import { getGalleryGridClass, getGalleryItemLayout } from "@/lib/gallery";

@@ -1,5 +1,5 @@
-import { AnimatePresence, motion } from "framer-motion";
 import { AudioLines, Pause } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useAudio } from "@/hooks/use-audio";
 
 export const AudioButton = () => {

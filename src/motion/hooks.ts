@@ -1,4 +1,4 @@
-import { useAnimation } from "framer-motion";
+import { useAnimation } from "motion/react";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import { PRESETS, STAGGER_PRESETS } from "./presets";
